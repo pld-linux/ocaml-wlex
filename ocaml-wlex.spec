@@ -6,7 +6,7 @@ Release:	1
 License:	LGPL
 Group:		Development/Tools
 Vendor:		Alain Frisch <Alain.Frisch@ens.fr>
-URL:		http://www.eleves.ens.fr/home/frisch/soft
+URL:		http://www.eleves.ens.fr/home/frisch/soft/
 # Source0-md5:	7a934e7158464632872647bad6f1145d
 Source0:	http://www.eleves.ens.fr/home/frisch/info/wlex-%{version}.tar.gz
 Patch0:		%{name}-lex-src.patch
