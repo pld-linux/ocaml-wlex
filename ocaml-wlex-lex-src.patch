@@ -1,17 +1,27 @@
-diff -urN wlex/Makefile wlex-/Makefile
---- wlex/Makefile	Tue Feb 19 23:37:45 2002
-+++ wlex-/Makefile	Sat May 11 22:49:47 2002
+diff -urN wlex-20021107-/Makefile wlex-20021107/Makefile
+--- wlex-20021107-/Makefile	2003-05-29 13:48:09.000000000 +0200
++++ wlex-20021107/Makefile	2003-05-29 13:49:56.000000000 +0200
 @@ -1,5 +1,5 @@
  # Edit and uncomment the following line
--OCAMLLEX_SRC = /users/formel8/frisch/ocaml-3.04/lex
+-OCAMLLEX_SRC = ~/ocaml-3.06/lex
 +OCAMLLEX_SRC = lex
  
  # The directory where the wlex binary goes
  INSTALL_BIN  = `which ocamlc | xargs dirname`
-diff -urN wlex/lex/.depend wlex-/lex/.depend
---- wlex/lex/.depend	Thu Jan  1 01:00:00 1970
-+++ wlex-/lex/.depend	Sun Feb 25 15:45:39 1996
-@@ -0,0 +1,17 @@
+diff -urN wlex-20021107-/lex/.cvsignore wlex-20021107/lex/.cvsignore
+--- wlex-20021107-/lex/.cvsignore	1970-01-01 01:00:00.000000000 +0100
++++ wlex-20021107/lex/.cvsignore	2003-05-29 13:49:49.000000000 +0200
+@@ -0,0 +1,6 @@
++parser.ml
++parser.mli
++lexer.ml
++ocamllex
++ocamllex.opt
++parser.output
+diff -urN wlex-20021107-/lex/.depend wlex-20021107/lex/.depend
+--- wlex-20021107-/lex/.depend	1970-01-01 01:00:00.000000000 +0100
++++ wlex-20021107/lex/.depend	2003-05-29 13:49:49.000000000 +0200
+@@ -0,0 +1,19 @@
 +compact.cmi: lexgen.cmi 
 +lexer.cmi: parser.cmi 
 +lexgen.cmi: syntax.cmi 
@@ -20,19 +30,21 @@ diff -urN wlex/lex/.depend wlex-/lex/.depend
 +compact.cmo: lexgen.cmi compact.cmi 
 +compact.cmx: lexgen.cmx compact.cmi 
 +lexer.cmo: parser.cmi syntax.cmi lexer.cmi 
-+lexer.cmx: parser.cmx syntax.cmi lexer.cmi 
++lexer.cmx: parser.cmx syntax.cmx lexer.cmi 
 +lexgen.cmo: syntax.cmi lexgen.cmi 
-+lexgen.cmx: syntax.cmi lexgen.cmi 
++lexgen.cmx: syntax.cmx lexgen.cmi 
 +main.cmo: compact.cmi lexer.cmi lexgen.cmi output.cmi parser.cmi syntax.cmi 
-+main.cmx: compact.cmx lexer.cmx lexgen.cmx output.cmx parser.cmx syntax.cmi 
++main.cmx: compact.cmx lexer.cmx lexgen.cmx output.cmx parser.cmx syntax.cmx 
 +output.cmo: compact.cmi lexgen.cmi syntax.cmi output.cmi 
-+output.cmx: compact.cmx lexgen.cmx syntax.cmi output.cmi 
++output.cmx: compact.cmx lexgen.cmx syntax.cmx output.cmi 
 +parser.cmo: syntax.cmi parser.cmi 
-+parser.cmx: syntax.cmi parser.cmi 
-diff -urN wlex/lex/Makefile wlex-/lex/Makefile
---- wlex/lex/Makefile	Thu Jan  1 01:00:00 1970
-+++ wlex-/lex/Makefile	Fri Mar 30 14:21:12 2001
-@@ -0,0 +1,73 @@
++parser.cmx: syntax.cmx parser.cmi 
++syntax.cmo: syntax.cmi 
++syntax.cmx: syntax.cmi 
+diff -urN wlex-20021107-/lex/Makefile wlex-20021107/lex/Makefile
+--- wlex-20021107-/lex/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ wlex-20021107/lex/Makefile	2003-05-29 13:49:49.000000000 +0200
+@@ -0,0 +1,74 @@
 +#########################################################################
 +#                                                                       #
 +#                            Objective Caml                             #
@@ -51,17 +63,17 @@ diff -urN wlex/lex/Makefile wlex-/lex/Makefile
 +
 +CAMLC=../boot/ocamlrun ../boot/ocamlc -I ../boot
 +CAMLOPT=../boot/ocamlrun ../ocamlopt -I ../stdlib
-+COMPFLAGS=
++COMPFLAGS=-warn-error A
 +LINKFLAGS=
 +CAMLYACC=../boot/ocamlyacc
-+YACCFLAGS=
++YACCFLAGS=-v
 +CAMLLEX=../boot/ocamlrun ../boot/ocamllex
 +CAMLDEP=../boot/ocamlrun ../tools/ocamldep
 +DEPFLAGS=
 +
 +OBJS=parser.cmo lexer.cmo lexgen.cmo compact.cmo output.cmo main.cmo
 +
-+all: ocamllex
++all: ocamllex syntax.cmo
 +allopt: ocamllex.opt
 +
 +ocamllex: $(OBJS)
@@ -73,6 +85,7 @@ diff -urN wlex/lex/Makefile wlex-/lex/Makefile
 +clean::
 +	rm -f ocamllex ocamllex.opt
 +	rm -f *.cmo *.cmi *.cmx *.o
++	rm -f parser.output
 +
 +parser.ml parser.mli: parser.mly
 +	$(CAMLYACC) $(YACCFLAGS) parser.mly
@@ -106,9 +119,9 @@ diff -urN wlex/lex/Makefile wlex-/lex/Makefile
 +	$(CAMLDEP) *.mli *.ml > .depend
 +
 +include .depend
-diff -urN wlex/lex/Makefile.Mac wlex-/lex/Makefile.Mac
---- wlex/lex/Makefile.Mac	Thu Jan  1 01:00:00 1970
-+++ wlex-/lex/Makefile.Mac	Wed Nov 17 19:57:33 1999
+diff -urN wlex-20021107-/lex/Makefile.Mac wlex-20021107/lex/Makefile.Mac
+--- wlex-20021107-/lex/Makefile.Mac	1970-01-01 01:00:00.000000000 +0100
++++ wlex-20021107/lex/Makefile.Mac	2003-05-29 13:49:49.000000000 +0200
 @@ -0,0 +1,63 @@
 +#########################################################################
 +#                                                                       #
@@ -173,9 +186,9 @@ diff -urN wlex/lex/Makefile.Mac wlex-/lex/Makefile.Mac
 +
 +depend Ä beforedepend
 +    {CAMLDEP} Å.mli Å.ml > Makefile.Mac.depend
-diff -urN wlex/lex/Makefile.Mac.depend wlex-/lex/Makefile.Mac.depend
---- wlex/lex/Makefile.Mac.depend	Thu Jan  1 01:00:00 1970
-+++ wlex-/lex/Makefile.Mac.depend	Sat Nov  2 19:01:15 1996
+diff -urN wlex-20021107-/lex/Makefile.Mac.depend wlex-20021107/lex/Makefile.Mac.depend
+--- wlex-20021107-/lex/Makefile.Mac.depend	1970-01-01 01:00:00.000000000 +0100
++++ wlex-20021107/lex/Makefile.Mac.depend	2003-05-29 13:49:49.000000000 +0200
 @@ -0,0 +1,17 @@
 +compact.cmiÄ lexgen.cmi 
 +lexer.cmiÄ parser.cmi 
@@ -194,9 +207,9 @@ diff -urN wlex/lex/Makefile.Mac.depend wlex-/lex/Makefile.Mac.depend
 +output.cmxÄ compact.cmx lexgen.cmx syntax.cmi output.cmi 
 +parser.cmoÄ syntax.cmi parser.cmi 
 +parser.cmxÄ syntax.cmi parser.cmi 
-diff -urN wlex/lex/Makefile.nt wlex-/lex/Makefile.nt
---- wlex/lex/Makefile.nt	Thu Jan  1 01:00:00 1970
-+++ wlex-/lex/Makefile.nt	Mon Feb  5 09:52:10 2001
+diff -urN wlex-20021107-/lex/Makefile.nt wlex-20021107/lex/Makefile.nt
+--- wlex-20021107-/lex/Makefile.nt	1970-01-01 01:00:00.000000000 +0100
++++ wlex-20021107/lex/Makefile.nt	2003-05-29 13:49:49.000000000 +0200
 @@ -0,0 +1,73 @@
 +#########################################################################
 +#                                                                       #
@@ -214,19 +227,19 @@ diff -urN wlex/lex/Makefile.nt wlex-/lex/Makefile.nt
 +
 +# The lexer generator
 +
-+CAMLC=..\boot\ocamlrun ..\boot\ocamlc -I ..\boot
-+CAMLOPT=..\boot\ocamlrun ..\ocamlopt -I ..\stdlib
-+COMPFLAGS=
++CAMLC=../boot/ocamlrun ../boot/ocamlc -I ../boot
++CAMLOPT=../boot/ocamlrun ../ocamlopt -I ../stdlib
++COMPFLAGS=-warn-error A
 +LINKFLAGS=
-+CAMLYACC=..\boot\ocamlyacc
-+YACCFLAGS=
-+CAMLLEX=..\boot\ocamlrun ..\boot\ocamllex
-+CAMLDEP=..\boot\ocamlrun ..\tools\ocamldep
++CAMLYACC=../boot/ocamlyacc
++YACCFLAGS=-v
++CAMLLEX=../boot/ocamlrun ../boot/ocamllex
++CAMLDEP=../boot/ocamlrun ../tools/ocamldep
 +DEPFLAGS=
 +
 +OBJS=parser.cmo lexer.cmo lexgen.cmo compact.cmo output.cmo main.cmo
 +
-+all: ocamllex
++all: ocamllex syntax.cmo
 +allopt: ocamllex.opt
 +
 +ocamllex: $(OBJS)
@@ -237,7 +250,7 @@ diff -urN wlex/lex/Makefile.nt wlex-/lex/Makefile.nt
 +
 +clean::
 +	rm -f ocamllex ocamllex.opt
-+	rm -f *.cmo *.cmi
++	rm -f *.cmo *.cmi *.cmx *.$(O)
 +
 +parser.ml parser.mli: parser.mly
 +	$(CAMLYACC) $(YACCFLAGS) parser.mly
@@ -270,11 +283,11 @@ diff -urN wlex/lex/Makefile.nt wlex-/lex/Makefile.nt
 +depend: beforedepend
 +	$(CAMLDEP) *.mli *.ml > .depend
 +
-+!include .depend
-diff -urN wlex/lex/compact.ml wlex-/lex/compact.ml
---- wlex/lex/compact.ml	Thu Jan  1 01:00:00 1970
-+++ wlex-/lex/compact.ml	Wed Nov 17 19:57:33 1999
-@@ -0,0 +1,121 @@
++include .depend
+diff -urN wlex-20021107-/lex/compact.ml wlex-20021107/lex/compact.ml
+--- wlex-20021107-/lex/compact.ml	1970-01-01 01:00:00.000000000 +0100
++++ wlex-20021107/lex/compact.ml	2003-05-29 13:49:49.000000000 +0200
+@@ -0,0 +1,128 @@
 +(***********************************************************************)
 +(*                                                                     *)
 +(*                           Objective Caml                            *)
@@ -389,16 +402,23 @@ diff -urN wlex/lex/compact.ml wlex-/lex/compact.ml
 +        base.(i) <- b;
 +        default.(i) <- d
 +  done;
++  let tables = 
 +  { tbl_base = base;
 +    tbl_backtrk = backtrk;
 +    tbl_default = default;
 +    tbl_trans = Array.sub !trans 0 !last_used;
 +    tbl_check = Array.sub !check 0 !last_used }
++  in
++  trans := Array.create 1024 0;
++  check := Array.create 1024 (-1);
++  last_used := 0;
++  tables
++  
 +
 +
-diff -urN wlex/lex/compact.mli wlex-/lex/compact.mli
---- wlex/lex/compact.mli	Thu Jan  1 01:00:00 1970
-+++ wlex-/lex/compact.mli	Wed Nov 17 19:57:33 1999
+diff -urN wlex-20021107-/lex/compact.mli wlex-20021107/lex/compact.mli
+--- wlex-20021107-/lex/compact.mli	1970-01-01 01:00:00.000000000 +0100
++++ wlex-20021107/lex/compact.mli	2003-05-29 13:49:49.000000000 +0200
 @@ -0,0 +1,24 @@
 +(***********************************************************************)
 +(*                                                                     *)
@@ -424,9 +444,9 @@ diff -urN wlex/lex/compact.mli wlex-/lex/compact.mli
 +    tbl_check: int array }               (* Check (compacted) *)
 +
 +val compact_tables: Lexgen.automata array -> lex_tables
-diff -urN wlex/lex/lexer.mli wlex-/lex/lexer.mli
---- wlex/lex/lexer.mli	Thu Jan  1 01:00:00 1970
-+++ wlex-/lex/lexer.mli	Wed Nov 17 19:57:33 1999
+diff -urN wlex-20021107-/lex/lexer.mli wlex-20021107/lex/lexer.mli
+--- wlex-20021107-/lex/lexer.mli	1970-01-01 01:00:00.000000000 +0100
++++ wlex-20021107/lex/lexer.mli	2003-05-29 13:49:49.000000000 +0200
 @@ -0,0 +1,20 @@
 +(***********************************************************************)
 +(*                                                                     *)
@@ -448,10 +468,10 @@ diff -urN wlex/lex/lexer.mli wlex-/lex/lexer.mli
 +
 +val line_num: int ref
 +val line_start_pos: int ref
-diff -urN wlex/lex/lexer.mll wlex-/lex/lexer.mll
---- wlex/lex/lexer.mll	Thu Jan  1 01:00:00 1970
-+++ wlex-/lex/lexer.mll	Wed Nov 17 19:57:33 1999
-@@ -0,0 +1,208 @@
+diff -urN wlex-20021107-/lex/lexer.mll wlex-20021107/lex/lexer.mll
+--- wlex-20021107-/lex/lexer.mll	1970-01-01 01:00:00.000000000 +0100
++++ wlex-20021107/lex/lexer.mll	2003-05-29 13:49:49.000000000 +0200
+@@ -0,0 +1,230 @@
 +(***********************************************************************)
 +(*                                                                     *)
 +(*                           Objective Caml                            *)
@@ -521,7 +541,22 @@ diff -urN wlex/lex/lexer.mll wlex-/lex/lexer.mll
 +    fn lexbuf
 +  with Lexical_error(msg, _, _) ->
 +    raise(Lexical_error(msg, line, column))
++
++let warning lexbuf msg =
++  Printf.eprintf "ocamllex warning:\nFile \"%s\", line %d, character %d: %s.\n"
++                  Sys.argv.(1) !line_num
++                  (Lexing.lexeme_start lexbuf - !line_start_pos) msg;
++  flush stderr;
++;;
++
 +}
++
++let identstart = 
++  ['A'-'Z' 'a'-'z' '_' '\192'-'\214' '\216'-'\246' '\248'-'\255']
++let identbody = 
++  ['A'-'Z' 'a'-'z' '_' '\192'-'\214' '\216'-'\246' '\248'-'\255' '\'' '0'-'9']
++let backslash_escapes =
++  ['\\' '"' '\'' 'n' 't' 'b' 'r']
 +
 +rule main = parse
 +    [' ' '\013' '\009' '\012' ] + 
@@ -534,7 +569,8 @@ diff -urN wlex/lex/lexer.mll wlex-/lex/lexer.mll
 +    { comment_depth := 1;
 +      handle_lexical_error comment lexbuf;
 +      main lexbuf }
-+  | ['A'-'Z' 'a'-'z'] ['A'-'Z' 'a'-'z' '\'' '_' '0'-'9'] *
++  | '_'  { Tunderscore }
++  | identstart identbody *
 +    { match Lexing.lexeme lexbuf with
 +        "rule" -> Trule
 +      | "parse" -> Tparse
@@ -548,7 +584,7 @@ diff -urN wlex/lex/lexer.mll wlex-/lex/lexer.mll
 +      Tstring(get_stored_string()) }
 +  | "'" [^ '\\'] "'" 
 +    { Tchar(Char.code(Lexing.lexeme_char lexbuf 1)) }
-+  | "'" '\\' ['\\' '\'' 'n' 't' 'b' 'r'] "'" 
++  | "'" '\\' backslash_escapes "'" 
 +    { Tchar(Char.code(char_for_backslash (Lexing.lexeme_char lexbuf 2))) }
 +  | "'" '\\' ['0'-'9'] ['0'-'9'] ['0'-'9'] "'" 
 +    { Tchar(Char.code(char_for_decimal_code lexbuf 2)) }
@@ -562,7 +598,6 @@ diff -urN wlex/lex/lexer.mll wlex-/lex/lexer.mll
 +               start_line = l1; start_col = n1 - s1}) }
 +  | '='  { Tequal }
 +  | '|'  { Tor }
-+  | '_'  { Tunderscore }
 +  | '['  { Tlbracket }
 +  | ']'  { Trbracket }
 +  | '*'  { Tstar }
@@ -590,9 +625,9 @@ diff -urN wlex/lex/lexer.mll wlex-/lex/lexer.mll
 +      string lexbuf;
 +      reset_string_buffer();
 +      action lexbuf }
-+  | "'" [^ '\\'] "'" 
++  | "'" [^ '\\' '\''] "'" 
 +    { action lexbuf }
-+  | "'" '\\' ['\\' '\'' 'n' 't' 'b' 'r'] "'" 
++  | "'" '\\' backslash_escapes "'" 
 +    { action lexbuf }
 +  | "'" '\\' ['0'-'9'] ['0'-'9'] ['0'-'9'] "'" 
 +    { action lexbuf }
@@ -616,7 +651,7 @@ diff -urN wlex/lex/lexer.mll wlex-/lex/lexer.mll
 +    { line_start_pos := Lexing.lexeme_end lexbuf;
 +      incr line_num;
 +      string lexbuf }
-+  | '\\' ['\\' '"' 'n' 't' 'b' 'r'] 
++  | '\\' backslash_escapes
 +    { store_string_char(char_for_backslash(Lexing.lexeme_char lexbuf 1));
 +      string lexbuf }
 +  | '\\' ['0'-'9'] ['0'-'9'] ['0'-'9'] 
@@ -628,6 +663,13 @@ diff -urN wlex/lex/lexer.mll wlex-/lex/lexer.mll
 +    { store_string_char '\010';
 +      line_start_pos := Lexing.lexeme_end lexbuf;
 +      incr line_num;
++      string lexbuf }
++  | '\\' _
++    { warning lexbuf
++              (Printf.sprintf "illegal backslash escape in string: `\\%c'"
++                              (Lexing.lexeme_char lexbuf 1));
++      store_string_char(Lexing.lexeme_char lexbuf 0);
++      store_string_char(Lexing.lexeme_char lexbuf 1);
 +      string lexbuf }
 +  | _ 
 +    { store_string_char(Lexing.lexeme_char lexbuf 0);
@@ -648,7 +690,7 @@ diff -urN wlex/lex/lexer.mll wlex-/lex/lexer.mll
 +      { comment lexbuf }
 +  | "'" [^ '\\' '\''] "'"
 +      { comment lexbuf }
-+  | "'\\" ['\\' '\'' 'n' 't' 'b' 'r'] "'"
++  | "'\\" backslash_escapes "'"
 +      { comment lexbuf }
 +  | "'\\" ['0'-'9'] ['0'-'9'] ['0'-'9'] "'"
 +      { comment lexbuf }
@@ -660,10 +702,10 @@ diff -urN wlex/lex/lexer.mll wlex-/lex/lexer.mll
 +      comment lexbuf }
 +  | _ 
 +    { comment lexbuf }
-diff -urN wlex/lex/lexgen.ml wlex-/lex/lexgen.ml
---- wlex/lex/lexgen.ml	Thu Jan  1 01:00:00 1970
-+++ wlex-/lex/lexgen.ml	Thu Dec 28 14:03:52 2000
-@@ -0,0 +1,242 @@
+diff -urN wlex-20021107-/lex/lexgen.ml wlex-20021107/lex/lexgen.ml
+--- wlex-20021107-/lex/lexgen.ml	1970-01-01 01:00:00.000000000 +0100
++++ wlex-20021107/lex/lexgen.ml	2003-05-29 13:49:49.000000000 +0200
+@@ -0,0 +1,241 @@
 +(***********************************************************************)
 +(*                                                                     *)
 +(*                           Objective Caml                            *)
@@ -692,11 +734,12 @@ diff -urN wlex/lex/lexgen.ml wlex-/lex/lexgen.ml
 +  | Alt of regexp * regexp
 +  | Star of regexp
 +
-+type lexer_entry =
++type ('args,'action) lexer_entry =
 +  { lex_name: string;
++    lex_args: 'args;
 +    lex_regexp: regexp;
-+    lex_actions: (int * location) list }
-+    
++    lex_actions: (int * 'action) list }
++
 +(* Representation of automata *)
 +
 +type automata =
@@ -711,17 +754,16 @@ diff -urN wlex/lex/lexgen.ml wlex-/lex/lexgen.ml
 +
 +(* Representation of entry points *)
 +
-+type automata_entry =
++type ('args,'action) automata_entry =
 +  { auto_name: string;
++    auto_args: 'args;
 +    auto_initial_state: int;
-+    auto_actions: (int * location) list }
-+    
++    auto_actions: (int * 'action) list }
++
 +(* From shallow to deep syntax *)
 +
 +let chars = ref ([] : int list list)
 +let chars_count = ref 0
-+let actions = ref ([] : (int * location) list)
-+let actions_count = ref 0
 +
 +let rec encode_regexp = function
 +    Epsilon -> Empty
@@ -739,30 +781,28 @@ diff -urN wlex/lex/lexgen.ml wlex-/lex/lexgen.ml
 +
 +let encode_casedef casedef =
 +  List.fold_left
-+   (fun reg (expr, act) ->
-+     let act_num = !actions_count in
-+     incr actions_count;
-+     actions := (act_num, act) :: !actions;
-+     Alt(reg, Seq(encode_regexp expr, Action act_num)))
-+   Empty
-+   casedef
++    (fun (reg,actions,count) (expr, act) ->
++       Alt(reg, Seq(encode_regexp expr, Action count)),
++       (count,act) :: actions,
++       (succ count)
++    )
++    (Empty, [], 0)
++    casedef
 +
 +let encode_lexdef def =
 +  chars := [];
 +  chars_count := 0;
 +  let entry_list =
 +    List.map
-+      (fun (entry_name, casedef) ->
-+        actions := [];
-+        actions_count := 0;
-+        let re = encode_casedef casedef in
++      (fun ((entry_name,args), casedef) ->
++        let (re,actions,_) = encode_casedef casedef in
 +        { lex_name = entry_name;
++          lex_args = args;
 +          lex_regexp = re;
-+          lex_actions = List.rev !actions })
-+      def.entrypoints in
++          lex_actions = List.rev actions })
++      def in
 +  let chr = Array.of_list (List.rev !chars) in
 +  chars := [];
-+  actions := [];
 +  (chr, entry_list)
 +
 +(* To generate directly a NFA from a regular expression.
@@ -898,6 +938,7 @@ diff -urN wlex/lex/lexgen.ml wlex-/lex/lexgen.ml
 +    List.map
 +      (fun le ->
 +        { auto_name = le.lex_name;
++          auto_args = le.lex_args;
 +          auto_initial_state = get_state(firstpos le.lex_regexp);
 +          auto_actions = le.lex_actions })
 +      entry_list in
@@ -906,10 +947,10 @@ diff -urN wlex/lex/lexgen.ml wlex-/lex/lexgen.ml
 +  List.iter (fun (act, i) -> actions.(i) <- act) states;
 +  reset_state_mem();
 +  (initial_states, actions)
-diff -urN wlex/lex/lexgen.mli wlex-/lex/lexgen.mli
---- wlex/lex/lexgen.mli	Thu Jan  1 01:00:00 1970
-+++ wlex-/lex/lexgen.mli	Wed Nov 17 19:57:34 1999
-@@ -0,0 +1,36 @@
+diff -urN wlex-20021107-/lex/lexgen.mli wlex-20021107/lex/lexgen.mli
+--- wlex-20021107-/lex/lexgen.mli	1970-01-01 01:00:00.000000000 +0100
++++ wlex-20021107/lex/lexgen.mli	2003-05-29 13:49:49.000000000 +0200
+@@ -0,0 +1,40 @@
 +(***********************************************************************)
 +(*                                                                     *)
 +(*                           Objective Caml                            *)
@@ -938,17 +979,21 @@ diff -urN wlex/lex/lexgen.mli wlex-/lex/lexgen.mli
 +
 +(* Representation of entry points *)
 +
-+type automata_entry =
++type ('args,'action) automata_entry =
 +  { auto_name: string;
++    auto_args: 'args;
 +    auto_initial_state: int;
-+    auto_actions: (int * Syntax.location) list }
++    auto_actions: (int * 'action) list }
 +
 +(* The entry point *)
 +
-+val make_dfa: Syntax.lexer_definition -> automata_entry list * automata array
-diff -urN wlex/lex/main.ml wlex-/lex/main.ml
---- wlex/lex/main.ml	Thu Jan  1 01:00:00 1970
-+++ wlex-/lex/main.ml	Wed Nov 17 19:57:34 1999
++val make_dfa :
++  ((string * 'arg) * (Syntax.regular_expression * 'action) list) list ->
++  ('arg, 'action) automata_entry list * automata array
++
+diff -urN wlex-20021107-/lex/main.ml wlex-20021107/lex/main.ml
+--- wlex-20021107-/lex/main.ml	1970-01-01 01:00:00.000000000 +0100
++++ wlex-20021107/lex/main.ml	2003-05-29 13:49:49.000000000 +0200
 @@ -0,0 +1,67 @@
 +(***********************************************************************)
 +(*                                                                     *)
@@ -986,7 +1031,7 @@ diff -urN wlex/lex/main.ml wlex-/lex/main.ml
 +  let lexbuf = Lexing.from_channel ic in
 +  try
 +    let def = Parser.lexer_definition Lexer.main lexbuf in
-+    let (entries, transitions) = Lexgen.make_dfa def in
++    let (entries, transitions) = Lexgen.make_dfa def.entrypoints in
 +    let tables = Compact.compact_tables transitions in
 +    Output.output_lexdef source_name ic oc
 +                         def.header tables entries def.trailer;
@@ -1017,9 +1062,9 @@ diff -urN wlex/lex/main.ml wlex-/lex/main.ml
 +
 +let _ = Printexc.catch main (); exit 0
 +
-diff -urN wlex/lex/output.ml wlex-/lex/output.ml
---- wlex/lex/output.ml	Thu Jan  1 01:00:00 1970
-+++ wlex-/lex/output.ml	Thu Aug 10 11:58:07 2000
+diff -urN wlex-20021107-/lex/output.ml wlex-20021107/lex/output.ml
+--- wlex-20021107-/lex/output.ml	1970-01-01 01:00:00.000000000 +0100
++++ wlex-20021107/lex/output.ml	2003-05-29 13:49:49.000000000 +0200
 @@ -0,0 +1,124 @@
 +(***********************************************************************)
 +(*                                                                     *)
@@ -1145,9 +1190,9 @@ diff -urN wlex/lex/output.ml wlex-/lex/output.ml
 +      output_string oc ";;\n\n";
 +  end;
 +  copy_chunk sourcefile ic oc trailer
-diff -urN wlex/lex/output.mli wlex-/lex/output.mli
---- wlex/lex/output.mli	Thu Jan  1 01:00:00 1970
-+++ wlex-/lex/output.mli	Wed Nov 17 19:57:35 1999
+diff -urN wlex-20021107-/lex/output.mli wlex-20021107/lex/output.mli
+--- wlex-20021107-/lex/output.mli	1970-01-01 01:00:00.000000000 +0100
++++ wlex-20021107/lex/output.mli	2003-05-29 13:49:49.000000000 +0200
 @@ -0,0 +1,25 @@
 +(***********************************************************************)
 +(*                                                                     *)
@@ -1169,15 +1214,15 @@ diff -urN wlex/lex/output.mli wlex-/lex/output.mli
 +      string -> in_channel -> out_channel ->
 +      Syntax.location ->
 +      Compact.lex_tables ->
-+      Lexgen.automata_entry list ->
++      (unit, Syntax.location) Lexgen.automata_entry list ->
 +      Syntax.location ->
 +      unit
 +
 +exception Table_overflow
-diff -urN wlex/lex/parser.mly wlex-/lex/parser.mly
---- wlex/lex/parser.mly	Thu Jan  1 01:00:00 1970
-+++ wlex-/lex/parser.mly	Wed Nov 17 19:57:35 1999
-@@ -0,0 +1,157 @@
+diff -urN wlex-20021107-/lex/parser.mly wlex-20021107/lex/parser.mly
+--- wlex-20021107-/lex/parser.mly	1970-01-01 01:00:00.000000000 +0100
++++ wlex-20021107/lex/parser.mly	2003-05-29 13:49:49.000000000 +0200
+@@ -0,0 +1,156 @@
 +/***********************************************************************/
 +/*                                                                     */
 +/*                           Objective Caml                            */
@@ -1230,10 +1275,9 @@ diff -urN wlex/lex/parser.mly wlex-/lex/parser.mly
 +%token Tstar Tmaybe Tplus Tlparen Trparen Tcaret Tdash Tlet
 +
 +%left Tor
-+%left CONCAT
-+%nonassoc Tmaybe
-+%left Tstar
-+%left Tplus
++%nonassoc CONCAT
++%nonassoc Tmaybe Tstar Tplus
++          Tident Tchar Tstring Tunderscore Teof Tlbracket Tlparen
 +
 +%start lexer_definition
 +%type <Syntax.lexer_definition> lexer_definition
@@ -1266,7 +1310,7 @@ diff -urN wlex/lex/parser.mly wlex-/lex/parser.mly
 +;
 +definition:
 +    Tident Tequal entry
-+        { ($1,$3) }
++        { (($1,()),$3) }
 +;
 +entry:
 +    Tparse case rest_of_entry
@@ -1335,9 +1379,9 @@ diff -urN wlex/lex/parser.mly wlex-/lex/parser.mly
 +
 +%%
 +
-diff -urN wlex/lex/syntax.mli wlex-/lex/syntax.mli
---- wlex/lex/syntax.mli	Thu Jan  1 01:00:00 1970
-+++ wlex-/lex/syntax.mli	Wed Nov 17 19:57:35 1999
+diff -urN wlex-20021107-/lex/syntax.ml wlex-20021107/lex/syntax.ml
+--- wlex-20021107-/lex/syntax.ml	1970-01-01 01:00:00.000000000 +0100
++++ wlex-20021107/lex/syntax.ml	2003-05-29 13:49:49.000000000 +0200
 @@ -0,0 +1,33 @@
 +(***********************************************************************)
 +(*                                                                     *)
@@ -1370,5 +1414,42 @@ diff -urN wlex/lex/syntax.mli wlex-/lex/syntax.mli
 +
 +type lexer_definition =
 +    { header: location;
-+      entrypoints: (string * (regular_expression * location) list) list;
++      entrypoints: ((string * unit) * (regular_expression * location) list) list;
++      trailer: location }
+diff -urN wlex-20021107-/lex/syntax.mli wlex-20021107/lex/syntax.mli
+--- wlex-20021107-/lex/syntax.mli	1970-01-01 01:00:00.000000000 +0100
++++ wlex-20021107/lex/syntax.mli	2003-05-29 13:49:49.000000000 +0200
+@@ -0,0 +1,33 @@
++(***********************************************************************)
++(*                                                                     *)
++(*                           Objective Caml                            *)
++(*                                                                     *)
++(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
++(*                                                                     *)
++(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
++(*  en Automatique.  All rights reserved.  This file is distributed    *)
++(*  under the terms of the Q Public License version 1.0.               *)
++(*                                                                     *)
++(***********************************************************************)
++
++(* $Id$ *)
++
++(* The shallow abstract syntax *)
++
++type location =
++    { start_pos: int;
++      end_pos: int;
++      start_line: int;
++      start_col: int }
++
++type regular_expression =
++    Epsilon
++  | Characters of int list
++  | Sequence of regular_expression * regular_expression
++  | Alternative of regular_expression * regular_expression
++  | Repetition of regular_expression
++
++type lexer_definition =
++    { header: location;
++      entrypoints: ((string * unit) * (regular_expression * location) list) list;
 +      trailer: location }
