@@ -43,7 +43,7 @@ contains files needed to develop OCaml programs using this library.
 Generator lekserów dla du¿ych kodowañ znaków (jak UTF8) oraz system
 uruchomieniowy. Generator jest rozpowszechniany na licencju QPL (jako
 ¿e jest on bazowany na czê¶ci OCamla), system uruchomieniowy natomiast
-jest rozpowszechiany na zasadach LGPL. Pakiet ten zawiera pliki
+jest rozpowszechniany na zasadach LGPL. Pakiet ten zawiera pliki
 niezbêdne do tworzenia programów u¿ywaj±cych tej biblioteki.
 
 %prep
