@@ -8,6 +8,7 @@ Group:		Development/Tools
 Vendor:		Alain Frisch <Alain.Frisch@ens.fr>
 URL:		http://www.eleves.ens.fr:8080/home/frisch/soft/
 Source0:	http://www.eleves.ens.fr:8080/home/frisch/info/wlex-%{version}.tar.gz
+# Source0-md5:	37ac559b6f47260921ae024b9a226bb0
 Patch0:		%{name}-lex-src.patch
 BuildRequires:	ocaml >= 3.04-7
 %requires_eq	ocaml-runtime
