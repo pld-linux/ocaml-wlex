@@ -1,16 +1,16 @@
-diff -urN wlex-20021107-/Makefile wlex-20021107/Makefile
---- wlex-20021107-/Makefile	2003-05-29 13:48:09.000000000 +0200
-+++ wlex-20021107/Makefile	2003-05-29 13:49:56.000000000 +0200
+diff -urN wlex-20030827.orig/Makefile wlex-20030827/Makefile
+--- wlex-20030827.orig/Makefile	2003-09-03 23:54:18.000000000 +0200
++++ wlex-20030827/Makefile	2003-09-03 23:54:33.000000000 +0200
 @@ -1,5 +1,5 @@
  # Edit and uncomment the following line
--OCAMLLEX_SRC = ~/ocaml-3.06/lex
+-OCAMLLEX_SRC = ~/ocaml-3.07beta2/lex
 +OCAMLLEX_SRC = lex
  
  # The directory where the wlex binary goes
  INSTALL_BIN  = `which ocamlc | xargs dirname`
-diff -urN wlex-20021107-/lex/.cvsignore wlex-20021107/lex/.cvsignore
---- wlex-20021107-/lex/.cvsignore	1970-01-01 01:00:00.000000000 +0100
-+++ wlex-20021107/lex/.cvsignore	2003-05-29 13:49:49.000000000 +0200
+diff -urN wlex-20030827.orig/lex/.cvsignore wlex-20030827/lex/.cvsignore
+--- wlex-20030827.orig/lex/.cvsignore	1970-01-01 01:00:00.000000000 +0100
++++ wlex-20030827/lex/.cvsignore	2003-09-03 23:54:22.000000000 +0200
 @@ -0,0 +1,6 @@
 +parser.ml
 +parser.mli
@@ -18,33 +18,46 @@ diff -urN wlex-20021107-/lex/.cvsignore wlex-20021107/lex/.cvsignore
 +ocamllex
 +ocamllex.opt
 +parser.output
-diff -urN wlex-20021107-/lex/.depend wlex-20021107/lex/.depend
---- wlex-20021107-/lex/.depend	1970-01-01 01:00:00.000000000 +0100
-+++ wlex-20021107/lex/.depend	2003-05-29 13:49:49.000000000 +0200
-@@ -0,0 +1,19 @@
+diff -urN wlex-20030827.orig/lex/.depend wlex-20030827/lex/.depend
+--- wlex-20030827.orig/lex/.depend	1970-01-01 01:00:00.000000000 +0100
++++ wlex-20030827/lex/.depend	2003-09-03 23:54:22.000000000 +0200
+@@ -0,0 +1,32 @@
++common.cmi: lexgen.cmi syntax.cmi 
 +compact.cmi: lexgen.cmi 
 +lexer.cmi: parser.cmi 
 +lexgen.cmi: syntax.cmi 
-+output.cmi: compact.cmi lexgen.cmi syntax.cmi 
++output.cmi: common.cmi compact.cmi lexgen.cmi syntax.cmi 
++outputbis.cmi: common.cmi lexgen.cmi syntax.cmi 
 +parser.cmi: syntax.cmi 
-+compact.cmo: lexgen.cmi compact.cmi 
-+compact.cmx: lexgen.cmx compact.cmi 
++syntax.cmi: cset.cmi 
++common.cmo: lexgen.cmi syntax.cmi common.cmi 
++common.cmx: lexgen.cmx syntax.cmx common.cmi 
++compact.cmo: lexgen.cmi table.cmi compact.cmi 
++compact.cmx: lexgen.cmx table.cmx compact.cmi 
++cset.cmo: cset.cmi 
++cset.cmx: cset.cmi 
 +lexer.cmo: parser.cmi syntax.cmi lexer.cmi 
 +lexer.cmx: parser.cmx syntax.cmx lexer.cmi 
-+lexgen.cmo: syntax.cmi lexgen.cmi 
-+lexgen.cmx: syntax.cmx lexgen.cmi 
-+main.cmo: compact.cmi lexer.cmi lexgen.cmi output.cmi parser.cmi syntax.cmi 
-+main.cmx: compact.cmx lexer.cmx lexgen.cmx output.cmx parser.cmx syntax.cmx 
-+output.cmo: compact.cmi lexgen.cmi syntax.cmi output.cmi 
-+output.cmx: compact.cmx lexgen.cmx syntax.cmx output.cmi 
-+parser.cmo: syntax.cmi parser.cmi 
-+parser.cmx: syntax.cmx parser.cmi 
-+syntax.cmo: syntax.cmi 
-+syntax.cmx: syntax.cmi 
-diff -urN wlex-20021107-/lex/Makefile wlex-20021107/lex/Makefile
---- wlex-20021107-/lex/Makefile	1970-01-01 01:00:00.000000000 +0100
-+++ wlex-20021107/lex/Makefile	2003-05-29 13:49:49.000000000 +0200
-@@ -0,0 +1,74 @@
++lexgen.cmo: cset.cmi syntax.cmi table.cmi lexgen.cmi 
++lexgen.cmx: cset.cmx syntax.cmx table.cmx lexgen.cmi 
++main.cmo: common.cmi compact.cmi lexer.cmi lexgen.cmi output.cmi \
++    outputbis.cmi parser.cmi syntax.cmi 
++main.cmx: common.cmx compact.cmx lexer.cmx lexgen.cmx output.cmx \
++    outputbis.cmx parser.cmx syntax.cmx 
++output.cmo: common.cmi compact.cmi lexgen.cmi syntax.cmi output.cmi 
++output.cmx: common.cmx compact.cmx lexgen.cmx syntax.cmx output.cmi 
++outputbis.cmo: common.cmi lexgen.cmi syntax.cmi outputbis.cmi 
++outputbis.cmx: common.cmx lexgen.cmx syntax.cmx outputbis.cmi 
++parser.cmo: cset.cmi syntax.cmi parser.cmi 
++parser.cmx: cset.cmx syntax.cmx parser.cmi 
++syntax.cmo: cset.cmi syntax.cmi 
++syntax.cmx: cset.cmx syntax.cmi 
++table.cmo: table.cmi 
++table.cmx: table.cmi 
+diff -urN wlex-20030827.orig/lex/Makefile wlex-20030827/lex/Makefile
+--- wlex-20030827.orig/lex/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ wlex-20030827/lex/Makefile	2003-09-03 23:54:22.000000000 +0200
+@@ -0,0 +1,71 @@
 +#########################################################################
 +#                                                                       #
 +#                            Objective Caml                             #
@@ -60,20 +73,18 @@ diff -urN wlex-20021107-/lex/Makefile wlex-20021107/lex/Makefile
 +# $Id$
 +
 +# The lexer generator
-+
-+CAMLC=../boot/ocamlrun ../boot/ocamlc -I ../boot
-+CAMLOPT=../boot/ocamlrun ../ocamlopt -I ../stdlib
++CAMLC=../boot/ocamlrun ../boot/ocamlc -nostdlib -I ../boot
++CAMLOPT=../boot/ocamlrun ../ocamlopt -nostdlib -I ../stdlib
 +COMPFLAGS=-warn-error A
-+LINKFLAGS=
 +CAMLYACC=../boot/ocamlyacc
 +YACCFLAGS=-v
 +CAMLLEX=../boot/ocamlrun ../boot/ocamllex
 +CAMLDEP=../boot/ocamlrun ../tools/ocamldep
-+DEPFLAGS=
 +
-+OBJS=parser.cmo lexer.cmo lexgen.cmo compact.cmo output.cmo main.cmo
 +
-+all: ocamllex syntax.cmo
++OBJS=cset.cmo syntax.cmo parser.cmo lexer.cmo table.cmo lexgen.cmo compact.cmo common.cmo output.cmo outputbis.cmo main.cmo
++
++all: ocamllex
 +allopt: ocamllex.opt
 +
 +ocamllex: $(OBJS)
@@ -84,14 +95,13 @@ diff -urN wlex-20021107-/lex/Makefile wlex-20021107/lex/Makefile
 +
 +clean::
 +	rm -f ocamllex ocamllex.opt
-+	rm -f *.cmo *.cmi *.cmx *.o
-+	rm -f parser.output
++	rm -f *.cmo *.cmi *.cmx *.o *~
 +
 +parser.ml parser.mli: parser.mly
 +	$(CAMLYACC) $(YACCFLAGS) parser.mly
 +
 +clean::
-+	rm -f parser.ml parser.mli
++	rm -f parser.ml parser.mli parser.output
 +
 +beforedepend:: parser.ml parser.mli
 +
@@ -119,9 +129,9 @@ diff -urN wlex-20021107-/lex/Makefile wlex-20021107/lex/Makefile
 +	$(CAMLDEP) *.mli *.ml > .depend
 +
 +include .depend
-diff -urN wlex-20021107-/lex/Makefile.Mac wlex-20021107/lex/Makefile.Mac
---- wlex-20021107-/lex/Makefile.Mac	1970-01-01 01:00:00.000000000 +0100
-+++ wlex-20021107/lex/Makefile.Mac	2003-05-29 13:49:49.000000000 +0200
+diff -urN wlex-20030827.orig/lex/Makefile.Mac wlex-20030827/lex/Makefile.Mac
+--- wlex-20030827.orig/lex/Makefile.Mac	1970-01-01 01:00:00.000000000 +0100
++++ wlex-20030827/lex/Makefile.Mac	2003-09-03 23:54:22.000000000 +0200
 @@ -0,0 +1,63 @@
 +#########################################################################
 +#                                                                       #
@@ -186,9 +196,9 @@ diff -urN wlex-20021107-/lex/Makefile.Mac wlex-20021107/lex/Makefile.Mac
 +
 +depend Ä beforedepend
 +    {CAMLDEP} Å.mli Å.ml > Makefile.Mac.depend
-diff -urN wlex-20021107-/lex/Makefile.Mac.depend wlex-20021107/lex/Makefile.Mac.depend
---- wlex-20021107-/lex/Makefile.Mac.depend	1970-01-01 01:00:00.000000000 +0100
-+++ wlex-20021107/lex/Makefile.Mac.depend	2003-05-29 13:49:49.000000000 +0200
+diff -urN wlex-20030827.orig/lex/Makefile.Mac.depend wlex-20030827/lex/Makefile.Mac.depend
+--- wlex-20030827.orig/lex/Makefile.Mac.depend	1970-01-01 01:00:00.000000000 +0100
++++ wlex-20030827/lex/Makefile.Mac.depend	2003-09-03 23:54:22.000000000 +0200
 @@ -0,0 +1,17 @@
 +compact.cmiÄ lexgen.cmi 
 +lexer.cmiÄ parser.cmi 
@@ -207,9 +217,9 @@ diff -urN wlex-20021107-/lex/Makefile.Mac.depend wlex-20021107/lex/Makefile.Mac.
 +output.cmxÄ compact.cmx lexgen.cmx syntax.cmi output.cmi 
 +parser.cmoÄ syntax.cmi parser.cmi 
 +parser.cmxÄ syntax.cmi parser.cmi 
-diff -urN wlex-20021107-/lex/Makefile.nt wlex-20021107/lex/Makefile.nt
---- wlex-20021107-/lex/Makefile.nt	1970-01-01 01:00:00.000000000 +0100
-+++ wlex-20021107/lex/Makefile.nt	2003-05-29 13:49:49.000000000 +0200
+diff -urN wlex-20030827.orig/lex/Makefile.nt wlex-20030827/lex/Makefile.nt
+--- wlex-20030827.orig/lex/Makefile.nt	1970-01-01 01:00:00.000000000 +0100
++++ wlex-20030827/lex/Makefile.nt	2003-09-03 23:54:22.000000000 +0200
 @@ -0,0 +1,73 @@
 +#########################################################################
 +#                                                                       #
@@ -237,7 +247,7 @@ diff -urN wlex-20021107-/lex/Makefile.nt wlex-20021107/lex/Makefile.nt
 +CAMLDEP=../boot/ocamlrun ../tools/ocamldep
 +DEPFLAGS=
 +
-+OBJS=parser.cmo lexer.cmo lexgen.cmo compact.cmo output.cmo main.cmo
++OBJS=cset.cmo syntax.cmo parser.cmo lexer.cmo table.cmo lexgen.cmo compact.cmo common.cmo output.cmo outputbis.cmo main.cmo
 +
 +all: ocamllex syntax.cmo
 +allopt: ocamllex.opt
@@ -284,10 +294,192 @@ diff -urN wlex-20021107-/lex/Makefile.nt wlex-20021107/lex/Makefile.nt
 +	$(CAMLDEP) *.mli *.ml > .depend
 +
 +include .depend
-diff -urN wlex-20021107-/lex/compact.ml wlex-20021107/lex/compact.ml
---- wlex-20021107-/lex/compact.ml	1970-01-01 01:00:00.000000000 +0100
-+++ wlex-20021107/lex/compact.ml	2003-05-29 13:49:49.000000000 +0200
-@@ -0,0 +1,128 @@
+diff -urN wlex-20030827.orig/lex/common.ml wlex-20030827/lex/common.ml
+--- wlex-20030827.orig/lex/common.ml	1970-01-01 01:00:00.000000000 +0100
++++ wlex-20030827/lex/common.ml	2003-09-03 23:54:22.000000000 +0200
+@@ -0,0 +1,151 @@
++(***********************************************************************)
++(*                                                                     *)
++(*                           Objective Caml                            *)
++(*                                                                     *)
++(*            Luc Maranget, projet Moscova,                            *)
++(*                         INRIA Rocquencourt                          *)
++(*                                                                     *)
++(*  Copyright 2002 Institut National de Recherche en Informatique et   *)
++(*  en Automatique.  All rights reserved.  This file is distributed    *)
++(*  under the terms of the Q Public License version 1.0.               *)
++(*                                                                     *)
++(***********************************************************************)
++
++open Printf
++open Syntax
++open Lexgen
++
++
++(* To copy the ML code fragments *)
++
++type line_tracker = {
++  file : string;
++  oc : out_channel;
++  ic : in_channel;
++  mutable cur_line : int;
++};;
++
++let open_tracker file oc = {
++  file = file;
++  oc = oc;
++  ic = open_in_bin file;
++  cur_line = 1;
++};;
++
++let close_tracker tr = close_in_noerr tr.ic;;
++
++let update_tracker tr =
++  fprintf tr.oc "\n";
++  flush tr.oc;
++  let cr_seen = ref false in
++  try while true do
++    match input_char tr.ic with
++    | '\010' when not !cr_seen -> tr.cur_line <- tr.cur_line + 1;
++    | '\013' -> cr_seen := true; tr.cur_line <- tr.cur_line + 1;
++    | _ -> cr_seen := false;
++  done with End_of_file ->
++  fprintf tr.oc "# %d \"%s\"\n" (tr.cur_line+1) tr.file;
++;;
++
++let copy_buffer = String.create 1024
++
++let copy_chars_unix ic oc start stop =
++  let n = ref (stop - start) in
++  while !n > 0 do
++    let m = input ic copy_buffer 0 (min !n 1024) in
++    output oc copy_buffer 0 m;
++    n := !n - m
++  done
++
++let copy_chars_win32 ic oc start stop =
++  for i = start to stop - 1 do
++    let c = input_char ic in
++    if c <> '\r' then output_char oc c
++  done
++
++let copy_chars =
++  match Sys.os_type with
++    "Win32" | "Cygwin" -> copy_chars_win32
++  | _       -> copy_chars_unix
++
++let copy_chunk sourcefile ic oc trl loc add_parens =
++  if loc.start_pos < loc.end_pos || add_parens then begin
++    fprintf oc "# %d \"%s\"\n" loc.start_line sourcefile;
++    if add_parens then begin
++      for i = 1 to loc.start_col - 1 do output_char oc ' ' done;
++      output_char oc '(';
++    end else begin
++      for i = 1 to loc.start_col do output_char oc ' ' done;
++    end;
++    seek_in ic loc.start_pos;
++    copy_chars ic oc loc.start_pos loc.end_pos;
++    if add_parens then output_char oc ')';
++    update_tracker trl;
++  end
++
++(* Various memory actions *)
++
++let output_mem_access oc i = fprintf oc "lexbuf.Lexing.lex_mem.(%d)" i
++
++let output_memory_actions pref oc = function
++  | []  -> ()
++  | mvs ->
++      output_string oc "(* " ;
++  fprintf oc "L=%d " (List.length mvs) ;
++  List.iter
++    (fun mv -> match mv with
++    | Copy (tgt, src) ->
++        fprintf oc "[%d] <- [%d] ;" tgt src
++    | Set tgt ->
++        fprintf oc "[%d] <- p ; " tgt)
++    mvs ;
++  output_string oc " *)\n" ;
++  List.iter
++    (fun mv -> match mv with
++    | Copy (tgt, src) ->
++        fprintf oc
++          "%s%a <- %a ;\n"
++          pref output_mem_access tgt output_mem_access src
++    | Set tgt ->
++        fprintf oc "%s%a <- lexbuf.Lexing.lex_curr_pos ;\n"
++          pref output_mem_access tgt)
++    mvs
++
++let output_base_mem oc = function
++  | Mem i -> output_mem_access oc i
++  | Start -> fprintf oc "lexbuf.Lexing.lex_start_pos"
++  | End   -> fprintf oc  "lexbuf.Lexing.lex_curr_pos"
++
++let output_tag_access oc = function
++  | Sum (a,0) ->
++      output_base_mem oc a
++  | Sum (a,i) ->
++      fprintf oc "(%a + %d)" output_base_mem a i
++
++let output_env oc env =
++  let pref = ref "let" in
++  match env with
++  | [] -> ()
++  | _  -> 
++      List.iter
++        (fun (x,v) ->
++          begin match v with
++          | Ident_string (o,nstart,nend) ->
++              fprintf oc
++                "\n  %s %s = Lexing.sub_lexeme%s lexbuf %a %a"
++                !pref x (if o then "_opt" else "")
++                output_tag_access nstart output_tag_access nend
++          | Ident_char (o,nstart) ->
++              fprintf oc
++                "\n  %s %s = Lexing.sub_lexeme_char%s lexbuf %a"
++                !pref x (if o then "_opt" else "")
++                output_tag_access nstart
++          end ;
++          pref := "and")
++        env ;
++      fprintf oc " in\n"
++
++(* Output the user arguments *)
++let output_args oc args =
++  List.iter (fun x -> (output_string oc x; output_char oc ' ')) args
++
+diff -urN wlex-20030827.orig/lex/common.mli wlex-20030827/lex/common.mli
+--- wlex-20030827.orig/lex/common.mli	1970-01-01 01:00:00.000000000 +0100
++++ wlex-20030827/lex/common.mli	2003-09-03 23:54:22.000000000 +0200
+@@ -0,0 +1,23 @@
++(***********************************************************************)
++(*                                                                     *)
++(*                           Objective Caml                            *)
++(*                                                                     *)
++(*         Damien Doligez, projet Moscova, INRIA Rocquencourt          *)
++(*                                                                     *)
++(*  Copyright 2002 Institut National de Recherche en Informatique et   *)
++(*  en Automatique.  All rights reserved.  This file is distributed    *)
++(*  under the terms of the Q Public License version 1.0.               *)
++(*                                                                     *)
++(***********************************************************************)
++
++type line_tracker;;
++val open_tracker : string -> out_channel -> line_tracker
++val close_tracker : line_tracker -> unit
++val copy_chunk :
++  string ->
++  in_channel -> out_channel -> line_tracker -> Syntax.location -> bool -> unit
++val output_mem_access : out_channel -> int -> unit
++val output_memory_actions :
++  string -> out_channel -> Lexgen.memory_action list -> unit
++val output_env : out_channel -> (string * Lexgen.ident_info) list -> unit
++val output_args : out_channel -> string list -> unit
+diff -urN wlex-20030827.orig/lex/compact.ml wlex-20030827/lex/compact.ml
+--- wlex-20030827.orig/lex/compact.ml	1970-01-01 01:00:00.000000000 +0100
++++ wlex-20030827/lex/compact.ml	2003-09-03 23:54:22.000000000 +0200
+@@ -0,0 +1,234 @@
 +(***********************************************************************)
 +(*                                                                     *)
 +(*                           Objective Caml                            *)
@@ -305,6 +497,49 @@ diff -urN wlex-20021107-/lex/compact.ml wlex-20021107/lex/compact.ml
 +(* Compaction of an automata *)
 +
 +open Lexgen
++
++(* Code for memory actions  *)
++let code = Table.create 0
++
++(* instructions are 2 8-bits integers, a 0xff byte means return *)
++
++let emit_int i = Table.emit code i
++
++let ins_mem i c =  match i with
++  | Copy (dst, src) -> dst::src::c
++  | Set dst         -> dst::0xff::c
++
++
++let ins_tag i c = match i with
++  | SetTag (dst, src) -> dst::src::c
++  | EraseTag dst      -> dst::0xff::c
++
++
++let do_emit_code c =
++  let r = Table.size code in
++  List.iter emit_int c ;
++  emit_int 0xff ;
++  r
++
++let memory = Hashtbl.create 101
++
++let mem_emit_code c =
++  try Hashtbl.find memory c with
++  | Not_found ->
++      let r = do_emit_code c in
++      Hashtbl.add memory c r ;
++      r
++
++(* Code address 0 is the empty code (ie do nothing) *)
++let _ = mem_emit_code []
++
++let emit_tag_code c = mem_emit_code (List.fold_right ins_tag c [])
++and emit_mem_code c  =mem_emit_code (List.fold_right ins_mem c [])
++
++(*******************************************)
++(* Compact the transition and check arrays *)
++(*******************************************)
++
 +
 +(* Determine the integer occurring most frequently in an array *)
 +
@@ -334,46 +569,74 @@ diff -urN wlex-20021107-/lex/compact.ml wlex-20021107/lex/compact.ml
 +    end in
 +  nondef 0
 +
-+(* Compact the transition and check arrays *)
 +
-+let trans = ref(Array.create 1024 0)
-+and check = ref(Array.create 1024 (-1))
-+and last_used = ref 0
++type t_compact =
++ {mutable c_trans : int array ;
++  mutable c_check : int array ;
++  mutable c_last_used : int ; }
 +
-+let grow_transitions () =
-+  let old_trans = !trans
-+  and old_check = !check in
++let create_compact () =
++  { c_trans = Array.create 1024 0 ;
++    c_check = Array.create 1024 (-1) ;
++    c_last_used = 0 ; }
++
++let reset_compact c =
++  c.c_trans <- Array.create 1024 0 ;
++  c.c_check <- Array.create 1024 (-1) ;
++  c.c_last_used <- 0
++
++(* One compacted table for transitions, one other for memory actions *)
++let trans = create_compact ()
++and moves = create_compact ()
++
++
++let grow_compact c =
++  let old_trans = c.c_trans
++  and old_check = c.c_check in
 +  let n = Array.length old_trans in
-+  trans := Array.create (2*n) 0;
-+  Array.blit old_trans 0 !trans 0 !last_used;
-+  check := Array.create (2*n) (-1);
-+  Array.blit old_check 0 !check 0 !last_used
++  c.c_trans <- Array.create (2*n) 0;
++  Array.blit old_trans 0 c.c_trans 0 c.c_last_used;
++  c.c_check <- Array.create (2*n) (-1);
++  Array.blit old_check 0 c.c_check 0 c.c_last_used
 +
-+let pack_moves state_num move_t =
-+  let move_v = Array.create 257 0 in
-+  for i = 0 to 256 do
-+    move_v.(i) <-
-+      (match move_t.(i) with
-+        Backtrack -> -1
-+      | Goto n -> n)
-+  done;
-+  let default = most_frequent_elt move_v in
-+  let nondef = non_default_elements default move_v in
++let do_pack state_num orig compact =
++  let default = most_frequent_elt orig in
++  let nondef = non_default_elements default orig in
 +  let rec pack_from b =
-+    while b + 257 > Array.length !trans do grow_transitions() done;
++    while
++      b + 257 > Array.length compact.c_trans
++    do
++      grow_compact compact
++    done;
 +    let rec try_pack = function
 +      [] -> b
 +    | (pos, v) :: rem ->
-+        if !check.(b + pos) = -1 then try_pack rem else pack_from (b+1) in
++        if compact.c_check.(b + pos) = -1 then
++          try_pack rem
++        else pack_from (b+1) in
 +    try_pack nondef in
 +  let base = pack_from 0 in
 +  List.iter
 +    (fun (pos, v) ->
-+      !trans.(base + pos) <- v;
-+      !check.(base + pos) <- state_num)
++      compact.c_trans.(base + pos) <- v;
++      compact.c_check.(base + pos) <- state_num)
 +    nondef;
-+  if base + 257 > !last_used then last_used := base + 257;
++  if base + 257 > compact.c_last_used then
++    compact.c_last_used <- base + 257;
 +  (base, default)
++
++let pack_moves state_num move_t =
++  let move_v = Array.create 257 0
++  and move_m = Array.create 257 0 in
++  for i = 0 to 256 do
++    let act,c = move_t.(i) in
++    move_v.(i) <- (match act with Backtrack -> -1 | Goto n -> n) ;
++    move_m.(i) <- emit_mem_code c
++  done ;
++  let pk_trans = do_pack state_num move_v trans
++  and pk_moves = do_pack state_num move_m moves in
++  pk_trans, pk_moves
++
 +
 +(* Build the tables *)
 +
@@ -382,44 +645,79 @@ diff -urN wlex-20021107-/lex/compact.ml wlex-20021107/lex/compact.ml
 +    tbl_backtrk: int array;              (* No_remember / Remember *)
 +    tbl_default: int array;              (* Default transition *)
 +    tbl_trans: int array;                (* Transitions (compacted) *)
-+    tbl_check: int array }               (* Check (compacted) *)
++    tbl_check: int array;                (* Check (compacted) *)
++(* code addresses are managed in a similar fashion as transitions *)
++    tbl_base_code : int array;           (* code ptr / base for Shift *)
++    tbl_backtrk_code : int array;        (* nothing / code when Remember *)
++(* moves to execute before transitions (compacted) *)
++    tbl_default_code : int array;
++    tbl_trans_code : int array;  
++    tbl_check_code : int array;
++(* byte code itself *)
++    tbl_code: int array;}
++
 +
 +let compact_tables state_v =
 +  let n = Array.length state_v in
 +  let base = Array.create n 0
 +  and backtrk = Array.create n (-1)
-+  and default = Array.create n 0 in
++  and default = Array.create n 0
++  and base_code = Array.create n 0
++  and backtrk_code = Array.create n 0
++  and default_code = Array.create n 0 in
 +  for i = 0 to n - 1 do
 +    match state_v.(i) with
-+      Perform n ->
-+        base.(i) <- -(n+1)
++    | Perform (n,c) ->
++        base.(i) <- -(n+1) ;
++        base_code.(i) <- emit_tag_code c
 +    | Shift(trans, move) ->
 +        begin match trans with
-+          No_remember -> ()
-+        | Remember n -> backtrk.(i) <- n
++        | No_remember -> ()
++        | Remember (n,c) ->
++            backtrk.(i) <- n ;
++            backtrk_code.(i) <- emit_tag_code c
 +        end;
-+        let (b, d) = pack_moves i move in
-+        base.(i) <- b;
-+        default.(i) <- d
++        let (b_trans, d_trans),(b_moves,d_moves) = pack_moves i move in
++        base.(i) <- b_trans; default.(i) <- d_trans ;
++        base_code.(i) <- b_moves; default_code.(i) <- d_moves ;
 +  done;
++  let code = Table.trim code in
 +  let tables = 
-+  { tbl_base = base;
-+    tbl_backtrk = backtrk;
-+    tbl_default = default;
-+    tbl_trans = Array.sub !trans 0 !last_used;
-+    tbl_check = Array.sub !check 0 !last_used }
++    if Array.length code > 1 then
++      { tbl_base = base;
++        tbl_backtrk = backtrk;
++        tbl_default = default;
++        tbl_trans = Array.sub trans.c_trans 0 trans.c_last_used;
++        tbl_check = Array.sub trans.c_check 0 trans.c_last_used;
++        tbl_base_code = base_code ;
++        tbl_backtrk_code = backtrk_code;
++        tbl_default_code = default_code;
++        tbl_trans_code = Array.sub moves.c_trans 0 moves.c_last_used;
++        tbl_check_code = Array.sub moves.c_check 0 moves.c_last_used;
++        tbl_code = code}
++    else (* when no memory moves, do not emit related tables *)
++       { tbl_base = base;
++        tbl_backtrk = backtrk;
++        tbl_default = default;
++        tbl_trans = Array.sub trans.c_trans 0 trans.c_last_used;
++        tbl_check = Array.sub trans.c_check 0 trans.c_last_used;
++        tbl_base_code = [||] ;
++        tbl_backtrk_code = [||];
++        tbl_default_code = [||];
++        tbl_trans_code = [||];
++        tbl_check_code = [||];
++        tbl_code = [||]}
 +  in
-+  trans := Array.create 1024 0;
-+  check := Array.create 1024 (-1);
-+  last_used := 0;
++  reset_compact trans ;
++  reset_compact moves ;
 +  tables
 +  
 +
 +
-diff -urN wlex-20021107-/lex/compact.mli wlex-20021107/lex/compact.mli
---- wlex-20021107-/lex/compact.mli	1970-01-01 01:00:00.000000000 +0100
-+++ wlex-20021107/lex/compact.mli	2003-05-29 13:49:49.000000000 +0200
-@@ -0,0 +1,24 @@
+diff -urN wlex-20030827.orig/lex/compact.mli wlex-20030827/lex/compact.mli
+--- wlex-20030827.orig/lex/compact.mli	1970-01-01 01:00:00.000000000 +0100
++++ wlex-20030827/lex/compact.mli	2003-09-03 23:54:22.000000000 +0200
+@@ -0,0 +1,33 @@
 +(***********************************************************************)
 +(*                                                                     *)
 +(*                           Objective Caml                            *)
@@ -435,18 +733,161 @@ diff -urN wlex-20021107-/lex/compact.mli wlex-20021107/lex/compact.mli
 +(* $Id$ *)
 +
 +(* Compaction of an automata *)
-+
 +type lex_tables =
 +  { tbl_base: int array;                 (* Perform / Shift *)
 +    tbl_backtrk: int array;              (* No_remember / Remember *)
 +    tbl_default: int array;              (* Default transition *)
 +    tbl_trans: int array;                (* Transitions (compacted) *)
-+    tbl_check: int array }               (* Check (compacted) *)
++    tbl_check: int array;                (* Check (compacted) *)
++(* code addresses are managed in a similar fashion as transitions *)
++    tbl_base_code : int array;           (* code ptr / base for Shift *)
++    tbl_backtrk_code : int array;        (* nothing / code when Remember *)
++(* moves to execute before transitions (compacted) *)
++    tbl_default_code : int array;
++    tbl_trans_code : int array;  
++    tbl_check_code : int array;
++(* byte code itself *)
++    tbl_code: int array;}
++
 +
 +val compact_tables: Lexgen.automata array -> lex_tables
-diff -urN wlex-20021107-/lex/lexer.mli wlex-20021107/lex/lexer.mli
---- wlex-20021107-/lex/lexer.mli	1970-01-01 01:00:00.000000000 +0100
-+++ wlex-20021107/lex/lexer.mli	2003-05-29 13:49:49.000000000 +0200
+diff -urN wlex-20030827.orig/lex/cset.ml wlex-20030827/lex/cset.ml
+--- wlex-20030827.orig/lex/cset.ml	1970-01-01 01:00:00.000000000 +0100
++++ wlex-20030827/lex/cset.ml	2003-09-03 23:54:22.000000000 +0200
+@@ -0,0 +1,94 @@
++(***********************************************************************)
++(*                                                                     *)
++(*                           Objective Caml                            *)
++(*                                                                     *)
++(*            Luc Maranget, Jerome Vouillon projet Cristal,            *)
++(*                         INRIA Rocquencourt                          *)
++(*                                                                     *)
++(*  Copyright 2002 Institut National de Recherche en Informatique et   *)
++(*  en Automatique.  All rights reserved.  This file is distributed    *)
++(*  under the terms of the Q Public License version 1.0.               *)
++(*                                                                     *)
++(***********************************************************************)
++
++type t = (int * int) list
++
++
++let empty = []
++let is_empty = function
++  | [] -> true
++  | _  -> false
++
++let singleton c = [c,c]
++
++let interval c1 c2 =
++  if c1 <= c2 then [c1,c2]
++  else [c2,c1]
++
++
++let rec union s1 s2 = match s1,s2 with
++| [],_ -> s2
++| _,[] -> s1
++| (c1,d1) as p1::r1, (c2,d2)::r2 ->
++    if c1 > c2 then
++      union s2 s1
++    else begin (* c1 <= c2 *)
++      if d1+1 < c2 then
++        p1::union r1 s2
++      else if d1 < d2 then
++        union ((c1,d2)::r2) r1
++      else
++        union s1 r2
++    end
++
++let rec inter l l' =  match l, l' with
++    _, [] -> []
++  | [], _ -> []
++  | (c1, c2)::r, (c1', c2')::r' ->
++      if c2 < c1' then
++        inter r l'
++      else if c2' < c1 then
++        inter l r'
++      else if c2 < c2' then
++        (max c1 c1', c2)::inter r l'
++      else
++        (max c1 c1', c2')::inter l r'
++
++let rec diff l l' =  match l, l' with
++    _, [] -> l
++  | [], _ -> []
++  | (c1, c2)::r, (c1', c2')::r' ->
++      if c2 < c1' then
++        (c1, c2)::diff r l'
++      else if c2' < c1 then
++        diff l r'
++      else
++        let r'' = if c2' < c2 then (c2' + 1, c2) :: r else r in
++        if c1 < c1' then
++          (c1, c1' - 1)::diff r'' r'
++        else
++          diff r'' r'
++
++
++let eof = singleton 256
++and all_chars = interval 0 255
++and all_chars_eof = interval 0 256
++
++let complement s = diff all_chars s
++
++let env_to_array env = match env with
++| []         -> assert false
++| (_,x)::rem ->
++    let res = Array.create 257 x in
++    List.iter
++      (fun (c,y) ->
++        List.iter
++          (fun (i,j) ->
++            for k=i to j do
++              res.(k) <- y
++            done)
++          c)
++      rem ;
++    res
++
++  
+diff -urN wlex-20030827.orig/lex/cset.mli wlex-20030827/lex/cset.mli
+--- wlex-20030827.orig/lex/cset.mli	1970-01-01 01:00:00.000000000 +0100
++++ wlex-20030827/lex/cset.mli	2003-09-03 23:54:22.000000000 +0200
+@@ -0,0 +1,32 @@
++(***********************************************************************)
++(*                                                                     *)
++(*                           Objective Caml                            *)
++(*                                                                     *)
++(*            Luc Maranget, Jerome Vouillon projet Cristal,            *)
++(*                         INRIA Rocquencourt                          *)
++(*                                                                     *)
++(*  Copyright 2002 Institut National de Recherche en Informatique et   *)
++(*  en Automatique.  All rights reserved.  This file is distributed    *)
++(*  under the terms of the Q Public License version 1.0.               *)
++(*                                                                     *)
++(***********************************************************************)
++
++(* Set of characters encoded as list of intervals *)
++
++type t 
++
++val empty : t
++val is_empty : t -> bool
++val all_chars : t
++val all_chars_eof : t
++val eof : t
++val singleton : int ->  t
++val interval : int -> int -> t
++val union : t -> t -> t
++val inter : t -> t -> t
++val diff : t -> t -> t
++val complement : t -> t
++val env_to_array : (t * 'a) list -> 'a array
++
++
++
+diff -urN wlex-20030827.orig/lex/lexer.mli wlex-20030827/lex/lexer.mli
+--- wlex-20030827.orig/lex/lexer.mli	1970-01-01 01:00:00.000000000 +0100
++++ wlex-20030827/lex/lexer.mli	2003-09-03 23:54:22.000000000 +0200
 @@ -0,0 +1,20 @@
 +(***********************************************************************)
 +(*                                                                     *)
@@ -468,10 +909,10 @@ diff -urN wlex-20021107-/lex/lexer.mli wlex-20021107/lex/lexer.mli
 +
 +val line_num: int ref
 +val line_start_pos: int ref
-diff -urN wlex-20021107-/lex/lexer.mll wlex-20021107/lex/lexer.mll
---- wlex-20021107-/lex/lexer.mll	1970-01-01 01:00:00.000000000 +0100
-+++ wlex-20021107/lex/lexer.mll	2003-05-29 13:49:49.000000000 +0200
-@@ -0,0 +1,230 @@
+diff -urN wlex-20030827.orig/lex/lexer.mll wlex-20030827/lex/lexer.mll
+--- wlex-20030827.orig/lex/lexer.mll	1970-01-01 01:00:00.000000000 +0100
++++ wlex-20030827/lex/lexer.mll	2003-09-03 23:54:22.000000000 +0200
+@@ -0,0 +1,273 @@
 +(***********************************************************************)
 +(*                                                                     *)
 +(*                           Objective Caml                            *)
@@ -497,27 +938,17 @@ diff -urN wlex-20021107-/lex/lexer.mll wlex-20021107/lex/lexer.mll
 +let brace_depth = ref 0
 +and comment_depth = ref 0
 +
++let in_pattern () = !brace_depth = 0 && !comment_depth = 0
++
 +exception Lexical_error of string * int * int
 +
-+let initial_string_buffer = String.create 256
-+let string_buff = ref initial_string_buffer
-+let string_index = ref 0
++let string_buff = Buffer.create 256
 +
-+let reset_string_buffer () =
-+  string_buff := initial_string_buffer;
-+  string_index := 0
++let reset_string_buffer () = Buffer.clear string_buff  
 +
-+let store_string_char c =
-+  if !string_index >= String.length !string_buff then begin
-+    let new_buff = String.create (String.length !string_buff * 2) in
-+    String.blit !string_buff 0 new_buff 0 (String.length !string_buff);
-+    string_buff := new_buff
-+  end;
-+  !string_buff.[!string_index] <- c;
-+  incr string_index
++let store_string_char c = Buffer.add_char string_buff c
 +
-+let get_stored_string () =
-+  String.sub !string_buff 0 !string_index
++let get_stored_string () = Buffer.contents string_buff
 +
 +let char_for_backslash = function
 +    'n' -> '\n'
@@ -526,34 +957,47 @@ diff -urN wlex-20021107-/lex/lexer.mll wlex-20021107/lex/lexer.mll
 +  | 'r' -> '\r'
 +  | c   -> c
 +
-+let char_for_decimal_code lexbuf i =
-+  Char.chr(100 * (Char.code(Lexing.lexeme_char lexbuf i) - 48) +
-+               10 * (Char.code(Lexing.lexeme_char lexbuf (i+1)) - 48) +
-+                    (Char.code(Lexing.lexeme_char lexbuf (i+2)) - 48))
 +
 +let line_num = ref 1
 +let line_start_pos = ref 0
 +
 +let handle_lexical_error fn lexbuf =
 +  let line = !line_num
-+  and column = Lexing.lexeme_start lexbuf - !line_start_pos in
++  and column = Lexing.lexeme_start lexbuf - !line_start_pos + 1 in
 +  try
 +    fn lexbuf
-+  with Lexical_error(msg, _, _) ->
++  with Lexical_error (msg, 0, 0) ->
 +    raise(Lexical_error(msg, line, column))
 +
++let get_input_name () = Sys.argv.(Array.length Sys.argv - 1)
++  
 +let warning lexbuf msg =
 +  Printf.eprintf "ocamllex warning:\nFile \"%s\", line %d, character %d: %s.\n"
-+                  Sys.argv.(1) !line_num
-+                  (Lexing.lexeme_start lexbuf - !line_start_pos) msg;
-+  flush stderr;
-+;;
++    (get_input_name ()) !line_num
++    (Lexing.lexeme_start lexbuf - !line_start_pos+1) msg;
++  flush stderr
++
++let decimal_code  c d u =
++  100 * (Char.code c - 48) + 10 * (Char.code d - 48) + (Char.code u - 48)
++
++let char_for_hexadecimal_code d u =
++  let d1 = Char.code d in
++  let val1 = if d1 >= 97 then d1 - 87
++             else if d1 >= 65 then d1 - 55
++             else d1 - 48
++  in
++  let d2 = Char.code u in
++  let val2 = if d2 >= 97 then d2 - 87
++             else if d2 >= 65 then d2 - 55
++             else d2 - 48
++  in
++  Char.chr (val1 * 16 + val2)
 +
 +}
 +
-+let identstart = 
++let identstart =
 +  ['A'-'Z' 'a'-'z' '_' '\192'-'\214' '\216'-'\246' '\248'-'\255']
-+let identbody = 
++let identbody =
 +  ['A'-'Z' 'a'-'z' '_' '\192'-'\214' '\216'-'\246' '\248'-'\255' '\'' '0'-'9']
 +let backslash_escapes =
 +  ['\\' '"' '\'' 'n' 't' 'b' 'r']
@@ -569,25 +1013,44 @@ diff -urN wlex-20021107-/lex/lexer.mll wlex-20021107/lex/lexer.mll
 +    { comment_depth := 1;
 +      handle_lexical_error comment lexbuf;
 +      main lexbuf }
-+  | '_'  { Tunderscore }
++  | '_' { Tunderscore }
 +  | identstart identbody *
 +    { match Lexing.lexeme lexbuf with
 +        "rule" -> Trule
 +      | "parse" -> Tparse
++      | "shortest" -> Tparse_shortest
 +      | "and" -> Tand
 +      | "eof" -> Teof
 +      | "let" -> Tlet
++      | "as"  -> Tas
 +      | s -> Tident s }
 +  | '"' 
 +    { reset_string_buffer();
 +      handle_lexical_error string lexbuf;
 +      Tstring(get_stored_string()) }
++(* note: ''' is a valid character literall (by contrast with the compiler) *)
 +  | "'" [^ '\\'] "'" 
 +    { Tchar(Char.code(Lexing.lexeme_char lexbuf 1)) }
 +  | "'" '\\' backslash_escapes "'" 
 +    { Tchar(Char.code(char_for_backslash (Lexing.lexeme_char lexbuf 2))) }
-+  | "'" '\\' ['0'-'9'] ['0'-'9'] ['0'-'9'] "'" 
-+    { Tchar(Char.code(char_for_decimal_code lexbuf 2)) }
++  | "'" '\\' (['0'-'9'] as c) (['0'-'9'] as d) (['0'-'9'] as u)"'" 
++    { let v = decimal_code c d u in
++      if v > 255 then
++        raise
++          (Lexical_error
++            (Printf.sprintf "illegal escape sequence \\%c%c%c" c d u,
++            !line_num, Lexing.lexeme_start lexbuf - !line_start_pos+1))
++      else
++        Tchar v }
++  | "'" '\\' 'x'
++       (['0'-'9' 'a'-'f' 'A'-'F'] as d) (['0'-'9' 'a'-'f' 'A'-'F'] as u) "'"
++       { Tchar(Char.code(char_for_hexadecimal_code d u)) }
++  | "'" '\\' (_ as c)
++    { raise
++       (Lexical_error
++         (Printf.sprintf "illegal escape sequence \\%c" c,
++          !line_num, Lexing.lexeme_start lexbuf - !line_start_pos+1))
++    }
 +  | '{' 
 +    { let n1 = Lexing.lexeme_end lexbuf
 +      and l1 = !line_num
@@ -611,51 +1074,37 @@ diff -urN wlex-20021107-/lex/lexer.mll wlex-20021107/lex/lexer.mll
 +  | _
 +    { raise(Lexical_error
 +             ("illegal character " ^ String.escaped(Lexing.lexeme lexbuf),
-+              !line_num, Lexing.lexeme_start lexbuf - !line_start_pos)) }
++              !line_num, Lexing.lexeme_start lexbuf - !line_start_pos+1)) }
 +
-+and action = parse
-+    '{' 
-+    { incr brace_depth;
-+      action lexbuf }
-+  | '}' 
-+    { decr brace_depth;
-+      if !brace_depth = 0 then Lexing.lexeme_start lexbuf else action lexbuf }
-+  | '"' 
-+    { reset_string_buffer();
-+      string lexbuf;
-+      reset_string_buffer();
-+      action lexbuf }
-+  | "'" [^ '\\' '\''] "'" 
-+    { action lexbuf }
-+  | "'" '\\' backslash_escapes "'" 
-+    { action lexbuf }
-+  | "'" '\\' ['0'-'9'] ['0'-'9'] ['0'-'9'] "'" 
-+    { action lexbuf }
-+  | "(*" 
-+    { comment_depth := 1;
-+      comment lexbuf;
-+      action lexbuf }
-+  | eof 
-+    { raise (Lexical_error("unterminated action", 0, 0)) }
-+  | '\010'
-+    { line_start_pos := Lexing.lexeme_end lexbuf;
-+      incr line_num;
-+      action lexbuf }
-+  | _ 
-+    { action lexbuf }
-+      
++
++(* String parsing comes from the compiler lexer *)
 +and string = parse
 +    '"' 
 +    { () }
-+  | '\\' [' ' '\013' '\009' '\012'] * '\010' [' ' '\013' '\009' '\012'] *
++   | '\\' ("\010" | "\013" | "\013\010") [' ' '\009'] *
 +    { line_start_pos := Lexing.lexeme_end lexbuf;
 +      incr line_num;
 +      string lexbuf }
-+  | '\\' backslash_escapes
-+    { store_string_char(char_for_backslash(Lexing.lexeme_char lexbuf 1));
++  | '\\' (backslash_escapes as c)
++    { store_string_char(char_for_backslash c);
 +      string lexbuf }
-+  | '\\' ['0'-'9'] ['0'-'9'] ['0'-'9'] 
-+    { store_string_char(char_for_decimal_code lexbuf 1);
++  | '\\' (['0'-'9'] as c) (['0'-'9'] as d) (['0'-'9']  as u)
++    { let v = decimal_code c d u in
++      if in_pattern () && v > 255 then
++       warning lexbuf
++        (Printf.sprintf
++          "illegal backslash escape in string: `\\%c%c%c'" c d u) ;
++      store_string_char (Char.chr v);
++      string lexbuf }
++ | '\\' 'x' (['0'-'9' 'a'-'f' 'A'-'F'] as d) (['0'-'9' 'a'-'f' 'A'-'F'] as u)
++    { store_string_char (char_for_hexadecimal_code d u) ;
++      string lexbuf }
++  | '\\' (_ as c)
++    {if in_pattern () then
++       warning lexbuf
++        (Printf.sprintf "illegal backslash escape in string: `\\%c'" c) ;
++      store_string_char '\\' ;
++      store_string_char c ;
 +      string lexbuf }
 +  | eof 
 +    { raise(Lexical_error("unterminated string", 0, 0)) }
@@ -664,16 +1113,15 @@ diff -urN wlex-20021107-/lex/lexer.mll wlex-20021107/lex/lexer.mll
 +      line_start_pos := Lexing.lexeme_end lexbuf;
 +      incr line_num;
 +      string lexbuf }
-+  | '\\' _
-+    { warning lexbuf
-+              (Printf.sprintf "illegal backslash escape in string: `\\%c'"
-+                              (Lexing.lexeme_char lexbuf 1));
-+      store_string_char(Lexing.lexeme_char lexbuf 0);
-+      store_string_char(Lexing.lexeme_char lexbuf 1);
++  | _ as c
++    { store_string_char c;
 +      string lexbuf }
-+  | _ 
-+    { store_string_char(Lexing.lexeme_char lexbuf 0);
-+      string lexbuf }
++
++(*
++   Lexers comment and action are quite similar,
++   they should lex both strings and characters,
++   in order not to be confused by what is inside then
++*)
 +
 +and comment = parse
 +    "(*" 
@@ -686,14 +1134,9 @@ diff -urN wlex-20021107-/lex/lexer.mll wlex-20021107/lex/lexer.mll
 +      string lexbuf;
 +      reset_string_buffer();
 +      comment lexbuf }
-+  | "''"
-+      { comment lexbuf }
-+  | "'" [^ '\\' '\''] "'"
-+      { comment lexbuf }
-+  | "'\\" backslash_escapes "'"
-+      { comment lexbuf }
-+  | "'\\" ['0'-'9'] ['0'-'9'] ['0'-'9'] "'"
-+      { comment lexbuf }
++  | "'"
++    { skip_char lexbuf ;
++      comment lexbuf }
 +  | eof 
 +    { raise(Lexical_error("unterminated comment", 0, 0)) }
 +  | '\010'
@@ -702,15 +1145,58 @@ diff -urN wlex-20021107-/lex/lexer.mll wlex-20021107/lex/lexer.mll
 +      comment lexbuf }
 +  | _ 
 +    { comment lexbuf }
-diff -urN wlex-20021107-/lex/lexgen.ml wlex-20021107/lex/lexgen.ml
---- wlex-20021107-/lex/lexgen.ml	1970-01-01 01:00:00.000000000 +0100
-+++ wlex-20021107/lex/lexgen.ml	2003-05-29 13:49:49.000000000 +0200
-@@ -0,0 +1,241 @@
++
++and action = parse
++    '{' 
++    { incr brace_depth;
++      action lexbuf }
++  | '}' 
++    { decr brace_depth;
++      if !brace_depth = 0 then Lexing.lexeme_start lexbuf else action lexbuf }
++  | '"' 
++    { reset_string_buffer();
++      handle_lexical_error string lexbuf;
++      reset_string_buffer();
++      action lexbuf }
++ | "'"
++    { skip_char lexbuf ;
++      action lexbuf }
++ | "(*" 
++    { comment_depth := 1;
++      comment lexbuf;
++      action lexbuf }
++  | eof 
++    { raise (Lexical_error("unterminated action", 0, 0)) }
++  | '\010'
++    { line_start_pos := Lexing.lexeme_end lexbuf;
++      incr line_num;
++      action lexbuf }
++  | _ 
++    { action lexbuf }
++
++and skip_char = parse
++  | '\\'? '\010' "'"
++     { line_start_pos := Lexing.lexeme_end lexbuf;
++       incr line_num }
++  | [^ '\\' '\''] "'" (* regular character *)
++(* one character and numeric escape sequences *)
++  | '\\' _ "'"
++  | '\\' ['0'-'9'] ['0'-'9'] ['0'-'9'] "'"
++  | '\\' 'x' ['0'-'9' 'a'-'f' 'A'-'F'] ['0'-'9' 'a'-'f' 'A'-'F'] "'"
++     {()}
++(* A dieu va ! *)
++  | "" {()} 
+diff -urN wlex-20030827.orig/lex/lexgen.ml wlex-20030827/lex/lexgen.ml
+--- wlex-20030827.orig/lex/lexgen.ml	1970-01-01 01:00:00.000000000 +0100
++++ wlex-20030827/lex/lexgen.ml	2003-09-03 23:54:22.000000000 +0200
+@@ -0,0 +1,1174 @@
 +(***********************************************************************)
 +(*                                                                     *)
 +(*                           Objective Caml                            *)
 +(*                                                                     *)
-+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
++(*            Xavier Leroy, projet Cristal,                            *)
++(*            Luc Maranget, projet Moscova,                            *)
++(*                  INRIA Rocquencourt                                 *)
 +(*                                                                     *)
 +(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
 +(*  en Automatique.  All rights reserved.  This file is distributed    *)
@@ -723,179 +1209,930 @@ diff -urN wlex-20021107-/lex/lexgen.ml wlex-20021107/lex/lexgen.ml
 +(* Compiling a lexer definition *)
 +
 +open Syntax
++open Printf
++
++exception Memory_overflow
 +
 +(* Deep abstract syntax for regular expressions *)
 +
++type tag_info = {id : string ; start : bool ; action : int}
++
 +type regexp =
 +    Empty
-+  | Chars of int
++  | Chars of int * bool
 +  | Action of int
++  | Tag of tag_info
 +  | Seq of regexp * regexp
 +  | Alt of regexp * regexp
 +  | Star of regexp
 +
++type tag_base = Start | End | Mem of int
++type tag_addr = Sum of (tag_base * int)        
++type ident_info =
++  | Ident_string of bool * tag_addr * tag_addr
++  | Ident_char of bool * tag_addr
++type t_env = (string * ident_info) list
++
 +type ('args,'action) lexer_entry =
 +  { lex_name: string;
-+    lex_args: 'args;
 +    lex_regexp: regexp;
-+    lex_actions: (int * 'action) list }
++    lex_mem_tags: int ;
++    lex_actions: (int *  t_env * 'action) list }
 +
-+(* Representation of automata *)
 +
 +type automata =
-+    Perform of int
-+  | Shift of automata_trans * automata_move array
++    Perform of int * tag_action list
++  | Shift of automata_trans * (automata_move * memory_action list) array
++
 +and automata_trans =
 +    No_remember
-+  | Remember of int
++  | Remember of int * tag_action list
++
 +and automata_move =
 +    Backtrack
 +  | Goto of int
++
++and memory_action =
++  | Copy of int * int
++  | Set of int
++
++and tag_action = SetTag of int * int | EraseTag of int
 +
 +(* Representation of entry points *)
 +
 +type ('args,'action) automata_entry =
 +  { auto_name: string;
-+    auto_args: 'args;
-+    auto_initial_state: int;
-+    auto_actions: (int * 'action) list }
++    auto_args: 'args ;
++    auto_mem_size : int ;
++    auto_initial_state: int * memory_action list;
++    auto_actions: (int * t_env * 'action) list }
 +
++
++(* A lot of sets and map structures *)
++
++module Ints = Set.Make(struct type t = int let compare = compare end)
++
++module Tags = Set.Make(struct type t = tag_info let compare = compare end)
++
++module TagMap =
++  Map.Make (struct type t = tag_info let compare = compare end)
++
++module StringSet =
++  Set.Make (struct type t = string let compare = Pervasives.compare end)
++module StringMap =
++  Map.Make (struct type t = string let compare = Pervasives.compare end)
++
++(*********************)
++(* Variable cleaning *)
++(*********************)
++
++(* Silently eliminate nested variables *)
++
++let rec do_remove_nested to_remove = function
++  | Bind (e,x) ->
++      if StringSet.mem x to_remove then
++        do_remove_nested to_remove e
++      else
++        Bind (do_remove_nested (StringSet.add x to_remove) e, x)
++  | Epsilon|Eof|Characters _ as e -> e
++  | Sequence (e1, e2) ->
++      Sequence
++        (do_remove_nested to_remove  e1, do_remove_nested to_remove  e2)
++  | Alternative (e1, e2) ->
++      Alternative
++        (do_remove_nested to_remove  e1, do_remove_nested to_remove  e2)
++  | Repetition e ->
++      Repetition (do_remove_nested to_remove  e)
++
++let remove_nested_as e = do_remove_nested StringSet.empty e
++
++(*********************)
++(* Variable analysis *)
++(*********************)
++
++(*
++  Optional variables.
++   A variable is optional when matching of regexp does not
++   implies it binds.
++     The typical case is:
++       ("" | 'a' as x) -> optional
++       ("" as x | 'a' as x) -> non-optional
++*)
++
++let stringset_delta s1 s2 =
++  StringSet.union
++    (StringSet.diff s1 s2)
++    (StringSet.diff s2 s1)
++
++let rec find_all_vars = function
++  | Characters _|Epsilon|Eof ->
++      StringSet.empty
++  | Bind (e,x) ->
++      StringSet.add x (find_all_vars e)
++  | Sequence (e1,e2)|Alternative (e1,e2) ->
++      StringSet.union (find_all_vars e1) (find_all_vars e2)
++  | Repetition e -> find_all_vars e
++
++
++let rec do_find_opt = function
++  | Characters _|Epsilon|Eof -> StringSet.empty, StringSet.empty
++  | Bind (e,x) ->
++      let opt,all = do_find_opt e in
++      opt, StringSet.add x all
++  | Sequence (e1,e2) ->
++      let opt1,all1 = do_find_opt e1
++      and opt2,all2 = do_find_opt e2 in
++      StringSet.union opt1 opt2, StringSet.union all1 all2
++  | Alternative (e1,e2) ->
++      let opt1,all1 = do_find_opt e1
++      and opt2,all2 = do_find_opt e2 in
++      StringSet.union
++        (stringset_delta opt1 opt2)
++        (stringset_delta all1 all2),
++      StringSet.union all1 all2
++  | Repetition e  ->
++      let r = find_all_vars e in
++      r,r
++
++let find_optional e =
++  let r,_ = do_find_opt e in r
++
++(*
++   Double variables
++   A variable is double when it can be bound more than once
++   in a single matching
++     The typical case is:
++       (e1 as x) (e2 as x)
++
++*)
++
++let rec do_find_double = function
++  | Characters _|Epsilon|Eof -> StringSet.empty, StringSet.empty
++  | Bind (e,x) ->
++      let dbl,all = do_find_double e in
++      (if StringSet.mem x all then
++        StringSet.add x dbl
++      else
++        dbl),
++      StringSet.add x all
++  | Sequence (e1,e2) ->
++      let dbl1, all1 = do_find_double e1
++      and dbl2, all2 = do_find_double e2 in
++      StringSet.union
++        (StringSet.inter all1 all2)
++        (StringSet.union dbl1 dbl2),
++      StringSet.union all1 all2
++  | Alternative (e1,e2) ->
++      let dbl1, all1 = do_find_double e1
++      and dbl2, all2 = do_find_double e2 in
++      StringSet.union dbl1 dbl2,
++      StringSet.union all1 all2
++  | Repetition e ->
++      let r = find_all_vars e in
++      r,r
++
++let find_double e = do_find_double e
++
++(*
++   Type of variables:
++    A variable is bound to a char when all its occurences
++    bind a pattern of length 1.
++     The typical case is:
++       (_ as x) -> char
++*)
++
++let add_some x = function
++  | Some i -> Some (x+i)
++  | None   -> None
++
++let add_some_some x y = match x,y with
++| Some i, Some j -> Some (i+j)
++| _,_            -> None
++
++let rec do_find_chars sz = function
++  | Epsilon|Eof    -> StringSet.empty, StringSet.empty, sz
++  | Characters _ -> StringSet.empty, StringSet.empty, add_some 1 sz
++  | Bind (e,x)   ->
++      let c,s,e_sz = do_find_chars (Some 0) e in
++      begin match e_sz  with
++      | Some 1 ->
++          StringSet.add x c,s,add_some 1 sz
++      | _ ->
++          c, StringSet.add x s, add_some_some sz e_sz
++      end
++  | Sequence (e1,e2) ->
++      let c1,s1,sz1 = do_find_chars sz e1 in
++      let c2,s2,sz2 = do_find_chars sz1 e2 in
++      StringSet.union c1 c2,
++      StringSet.union s1 s2,
++      sz2
++  | Alternative (e1,e2) ->
++      let c1,s1,sz1 = do_find_chars sz e1
++      and c2,s2,sz2 = do_find_chars sz e2 in
++      StringSet.union c1 c2,
++      StringSet.union s1 s2,
++      (if sz1 = sz2 then sz1 else None)
++  | Repetition e -> do_find_chars None e
++
++
++
++let find_chars e =
++  let c,s,_ = do_find_chars (Some 0) e in
++  StringSet.diff c s
++
++(*******************************)
 +(* From shallow to deep syntax *)
++(*******************************)
 +
-+let chars = ref ([] : int list list)
++let chars = ref ([] : Cset.t list)
 +let chars_count = ref 0
 +
-+let rec encode_regexp = function
++
++let rec encode_regexp char_vars act = function
 +    Epsilon -> Empty
 +  | Characters cl ->
 +      let n = !chars_count in
 +      chars := cl :: !chars;
 +      incr chars_count;
-+      Chars(n)
++      Chars(n,false)
++  | Eof ->
++      let n = !chars_count in
++      chars := Cset.eof :: !chars;
++      incr chars_count;
++      Chars(n,true)
 +  | Sequence(r1,r2) ->
-+      Seq(encode_regexp r1, encode_regexp r2)
++      let r1 = encode_regexp char_vars act r1 in
++      let r2 = encode_regexp char_vars act r2 in
++      Seq (r1, r2)
 +  | Alternative(r1,r2) ->
-+      Alt(encode_regexp r1, encode_regexp r2)
++      let r1 = encode_regexp char_vars act r1 in
++      let r2 = encode_regexp char_vars act r2 in
++      Alt(r1, r2)
 +  | Repetition r ->
-+      Star (encode_regexp r)
++      let r = encode_regexp char_vars act r in
++      Star r
++  | Bind (r,x) ->
++      let r = encode_regexp char_vars act r in
++      if StringSet.mem x char_vars then
++        Seq (Tag {id=x ; start=true ; action=act},r)
++      else
++        Seq (Tag {id=x ; start=true ; action=act},
++          Seq (r, Tag {id=x ; start=false ; action=act}))
 +
++
++(* Optimisation,
++    Static optimization :
++      Replace tags by offsets relative to the beginning
++      or end of matched string. 
++    Dynamic optimization:
++      Replace some non-optional, non-double tags by offsets w.r.t
++      a previous similar tag.
++*)
++
++let incr_pos = function
++  | None   -> None
++  | Some i -> Some (i+1)
++
++let decr_pos = function
++  | None -> None
++  | Some i -> Some (i-1)
++
++
++let opt = true
++
++let mk_seq r1 r2 = match r1,r2  with
++| Empty,_ -> r2
++| _,Empty -> r1
++| _,_     -> Seq (r1,r2)
++
++let add_pos p i = match p with
++| Some (Sum (a,n)) -> Some (Sum (a,n+i))
++| None -> None
++
++let opt_regexp all_vars char_vars optional_vars double_vars r =
++
++(* From removed tags to their addresses *)
++  let env = Hashtbl.create 17 in
++
++(* First static optimizations, from start position *)
++  let rec size_forward pos = function
++    | Empty|Chars (_,true)|Tag _ -> Some pos
++    | Chars (_,false) -> Some (pos+1)
++    | Seq (r1,r2) ->
++        begin match size_forward pos r1 with
++        | None -> None
++        | Some pos  -> size_forward pos r2
++        end
++    | Alt (r1,r2) ->
++        let pos1 = size_forward pos r1
++        and pos2 = size_forward pos r2 in
++        if pos1=pos2 then pos1 else None
++    | Star _ -> None
++    | Action _ -> assert false in
++
++  let rec simple_forward pos r = match r with
++    | Tag n ->
++        if StringSet.mem n.id double_vars then
++          r,Some pos
++        else begin
++          Hashtbl.add env (n.id,n.start) (Sum (Start, pos)) ;
++          Empty,Some pos
++        end
++    | Empty -> r, Some pos
++    | Chars (_,is_eof) ->
++        r,Some (if is_eof then  pos else pos+1)
++    | Seq (r1,r2) ->
++        let r1,pos = simple_forward pos r1 in
++        begin match pos with
++        | None -> mk_seq r1 r2,None
++        | Some pos ->
++            let r2,pos = simple_forward pos r2 in
++            mk_seq r1 r2,pos
++        end
++    | Alt (r1,r2) ->
++        let pos1 = size_forward pos r1
++        and pos2 = size_forward pos r2 in
++        r,(if pos1=pos2 then pos1 else None)
++    | Star _ -> r,None
++    | Action _ -> assert false in
++
++(* Then static optimizations, from end position *)
++  let rec size_backward pos = function
++    | Empty|Chars (_,true)|Tag _ -> Some pos
++    | Chars (_,false) -> Some (pos-1)
++    | Seq (r1,r2) ->
++        begin match size_backward pos r2 with
++        | None -> None
++        | Some pos  -> size_backward pos r1
++        end
++    | Alt (r1,r2) ->
++        let pos1 = size_backward pos r1
++        and pos2 = size_backward pos r2 in
++        if pos1=pos2 then pos1 else None
++    | Star _ -> None
++    | Action _ -> assert false in
++
++
++  let rec simple_backward pos r = match r with
++    | Tag n ->
++        if StringSet.mem n.id double_vars then
++          r,Some pos
++        else begin
++          Hashtbl.add env (n.id,n.start) (Sum (End, pos)) ;
++          Empty,Some pos
++        end
++    | Empty -> r,Some pos
++    | Chars (_,is_eof) ->
++        r,Some (if is_eof then pos else pos-1)
++    | Seq (r1,r2) ->
++        let r2,pos = simple_backward pos r2 in
++        begin match pos with
++        | None -> mk_seq r1 r2,None
++        | Some pos ->
++            let r1,pos = simple_backward pos r1 in
++            mk_seq r1 r2,pos
++        end
++    | Alt (r1,r2) ->
++        let pos1 = size_backward pos r1
++        and pos2 = size_backward pos r2 in
++        r,(if pos1=pos2 then pos1 else None)
++    | Star _ -> r,None
++    | Action _ -> assert false in
++
++  let r =
++    if opt then
++      let r,_ = simple_forward 0 r in
++      let r,_ = simple_backward 0 r in
++      r
++    else
++      r in
++
++  let loc_count = ref 0 in
++  let get_tag_addr t =
++    try
++     Hashtbl.find env t
++    with
++    | Not_found ->
++        let n = !loc_count in
++        incr loc_count ;
++        Hashtbl.add env t (Sum (Mem n,0)) ;
++        Sum (Mem n,0) in
++
++  let rec alloc_exp pos r = match r with
++    | Tag n ->
++        if StringSet.mem n.id double_vars then
++          r,pos
++        else begin match pos with
++        | Some a ->
++            Hashtbl.add env (n.id,n.start) a ;
++            Empty,pos
++        | None ->
++            let a = get_tag_addr (n.id,n.start) in
++            r,Some a
++        end
++          
++    | Empty -> r,pos
++    | Chars (_,is_eof) -> r,(if is_eof then pos else add_pos pos 1)
++    | Seq (r1,r2) ->
++        let r1,pos = alloc_exp pos r1 in
++        let r2,pos = alloc_exp pos r2 in
++        mk_seq r1 r2,pos
++    | Alt (_,_) ->
++        let off = size_forward 0 r in
++        begin match off with
++        | Some i -> r,add_pos pos i
++        | None -> r,None
++        end
++    | Star _ -> r,None
++    | Action _ -> assert false in
++
++  let r,_ = alloc_exp None r in
++  let m =      
++    StringSet.fold
++      (fun x r ->
++        let v =
++          if StringSet.mem x char_vars then
++            Ident_char
++              (StringSet.mem x optional_vars, get_tag_addr (x,true))
++          else
++            Ident_string
++              (StringSet.mem x optional_vars,
++               get_tag_addr (x,true),
++               get_tag_addr (x,false)) in
++        (x,v)::r)
++      all_vars [] in
++  m,r, !loc_count
++
++        
++  
 +let encode_casedef casedef =
-+  List.fold_left
-+    (fun (reg,actions,count) (expr, act) ->
-+       Alt(reg, Seq(encode_regexp expr, Action count)),
-+       (count,act) :: actions,
-+       (succ count)
-+    )
-+    (Empty, [], 0)
-+    casedef
++  let r =
++    List.fold_left
++      (fun (reg,actions,count,ntags) (expr, act) ->
++        let expr = remove_nested_as expr in
++        let char_vars = find_chars expr in
++        let r = encode_regexp char_vars count expr
++        and opt_vars = find_optional expr
++        and double_vars,all_vars = find_double expr in
++        let m,r,loc_ntags =
++          opt_regexp all_vars char_vars opt_vars double_vars r in
++        Alt(reg, Seq(r, Action count)),
++        (count, m ,act) :: actions,
++        (succ count),
++        max loc_ntags ntags)
++      (Empty, [], 0, 0)
++      casedef in
++  r
 +
 +let encode_lexdef def =
 +  chars := [];
 +  chars_count := 0;
 +  let entry_list =
 +    List.map
-+      (fun ((entry_name,args), casedef) ->
-+        let (re,actions,_) = encode_casedef casedef in
++      (fun {name=entry_name ; args=args ; shortest=shortest ; clauses= casedef} ->
++        let (re,actions,_,ntags) = encode_casedef casedef in
 +        { lex_name = entry_name;
-+          lex_args = args;
 +          lex_regexp = re;
-+          lex_actions = List.rev actions })
++          lex_mem_tags = ntags ;
++          lex_actions = List.rev actions },args,shortest)
 +      def in
 +  let chr = Array.of_list (List.rev !chars) in
 +  chars := [];
 +  (chr, entry_list)
 +
 +(* To generate directly a NFA from a regular expression.
-+   Confer Aho-Sethi-Ullman, dragon book, chap. 3 *)
++     Confer Aho-Sethi-Ullman, dragon book, chap. 3 
++   Extension to tagged automata.
++     Confer
++       Ville Larikari
++      ``NFAs with Tagged Transitions, their Conversion to Deterministic
++        Automata and Application to Regular Expressions''.
++       Symposium on String Processing and Information Retrieval (SPIRE 2000),
++     http://kouli.iki.fi/~vlaurika/spire2000-tnfa.ps
++(See also)
++     http://kouli.iki.fi/~vlaurika/regex-submatch.ps.gz
++*)
 +
-+type transition =
-+    OnChars of int
++type t_transition =
++    OnChars of int 
 +  | ToAction of int
++
++type transition = t_transition * Tags.t
++
++let compare_trans (t1,tags1) (t2,tags2) =
++  match Pervasives.compare  t1 t2 with
++  | 0 -> Tags.compare tags1 tags2
++  | r -> r
++
 +
 +module TransSet =
 +  Set.Make(struct type t = transition let compare = compare end)
 +
 +let rec nullable = function
-+    Empty      -> true
-+  | Chars _    -> false
-+  | Action _   -> false
++  | Empty|Tag _ -> true
++  | Chars (_,_)|Action _ -> false
 +  | Seq(r1,r2) -> nullable r1 && nullable r2
 +  | Alt(r1,r2) -> nullable r1 || nullable r2
 +  | Star r     -> true
 +
++let rec emptymatch = function
++  | Empty | Chars (_,_) | Action _ -> Tags.empty
++  | Tag t       -> Tags.add t Tags.empty
++  | Seq (r1,r2) -> Tags.union (emptymatch r1) (emptymatch r2)
++  | Alt(r1,r2)  ->
++      if nullable r1 then
++        emptymatch r1
++      else
++        emptymatch r2
++  | Star r ->
++      if nullable r then
++        emptymatch r
++      else
++        Tags.empty
++
++let addtags transs tags =
++  TransSet.fold
++    (fun (t,tags_t) r -> TransSet.add (t, Tags.union tags tags_t) r)
++    transs TransSet.empty
++
++
 +let rec firstpos = function
-+    Empty      -> TransSet.empty
-+  | Chars pos  -> TransSet.add (OnChars pos) TransSet.empty
-+  | Action act -> TransSet.add (ToAction act) TransSet.empty
-+  | Seq(r1,r2) -> if nullable r1
-+                  then TransSet.union (firstpos r1) (firstpos r2)
-+                  else firstpos r1
++    Empty|Tag _ -> TransSet.empty
++  | Chars (pos,_) -> TransSet.add (OnChars pos,Tags.empty) TransSet.empty
++  | Action act -> TransSet.add (ToAction act,Tags.empty) TransSet.empty
++  | Seq(r1,r2) ->
++      if nullable r1 then
++        TransSet.union (firstpos r1) (addtags (firstpos r2) (emptymatch r1))
++      else
++        firstpos r1
 +  | Alt(r1,r2) -> TransSet.union (firstpos r1) (firstpos r2)
 +  | Star r     -> firstpos r
 +
-+let rec lastpos = function
-+    Empty      -> TransSet.empty
-+  | Chars pos  -> TransSet.add (OnChars pos) TransSet.empty
-+  | Action act -> TransSet.add (ToAction act) TransSet.empty
-+  | Seq(r1,r2) -> if nullable r2
-+                  then TransSet.union (lastpos r1) (lastpos r2)
-+                  else lastpos r2
-+  | Alt(r1,r2) -> TransSet.union (lastpos r1) (lastpos r2)
-+  | Star r     -> lastpos r
 +
++(* Berry-sethi followpos *)
 +let followpos size entry_list =
 +  let v = Array.create size TransSet.empty in
-+  let fill_pos first = function
-+      OnChars pos -> v.(pos) <- TransSet.union first v.(pos)
-+    | ToAction _  -> () in
-+  let rec fill = function
-+      Seq(r1,r2) ->
-+        fill r1; fill r2;
-+        TransSet.iter (fill_pos (firstpos r2)) (lastpos r1)
-+    | Alt(r1,r2) ->
-+        fill r1; fill r2
++  let rec fill s = function
++    | Empty|Action _|Tag _ -> ()
++    | Chars (n,_) -> v.(n) <- s
++    | Alt (r1,r2) ->
++        fill s r1 ; fill s r2
++    | Seq (r1,r2) ->
++        fill
++          (if nullable r2 then
++            TransSet.union (firstpos r2) (addtags s (emptymatch r2))
++          else
++            (firstpos r2))
++          r1 ;
++        fill s r2
 +    | Star r ->
-+        fill r;
-+        TransSet.iter (fill_pos (firstpos r)) (lastpos r)
-+    | _ -> () in
-+  List.iter (fun entry -> fill entry.lex_regexp) entry_list;
++        fill (TransSet.union (firstpos r) s) r in
++  List.iter (fun (entry,_,_) -> fill TransSet.empty entry.lex_regexp) entry_list ;
 +  v
++  
++(************************)
++(* The algorithm itself *)
++(************************)
 +
 +let no_action = max_int
 +
-+let split_trans_set trans_set =
-+  TransSet.fold
-+    (fun trans (act, pos_set as act_pos_set) ->
-+      match trans with
-+        OnChars pos -> (act, pos :: pos_set)
-+      | ToAction act1 -> if act1 < act then (act1, pos_set) else act_pos_set)
-+    trans_set
-+    (no_action, [])
++module StateSet =
++  Set.Make (struct type t = t_transition let compare = Pervasives.compare end)
 +
++
++module MemMap =
++  Map.Make (struct type t = int let compare = Pervasives.compare end)
++
++type 'a dfa_state =
++  {final : int * ('a * int TagMap.t) ;
++   others : ('a * int TagMap.t) MemMap.t}
++
++(*
++let dtag oc t =
++  fprintf oc "%s<%s>" t.id (if t.start then "s" else "e")
++
++let dmem_map dp ds m =
++  MemMap.iter
++    (fun k x ->
++      eprintf "%d -> " k ; dp x ; ds ())
++    m
++
++and dtag_map dp ds m =
++  TagMap.iter
++    (fun t x ->
++      dtag stderr t ; eprintf " -> " ; dp x ; ds ())
++    m
++
++let dstate {final=(act,(_,m)) ; others=o} =
++  if act <> no_action then begin
++    eprintf "final=%d " act ;
++    dtag_map (fun x -> eprintf "%d" x) (fun () -> prerr_string " ,") m ;
++    prerr_endline ""
++  end ;
++  dmem_map
++    (fun (_,m) ->
++      dtag_map (fun x -> eprintf "%d" x) (fun () -> prerr_string " ,") m)
++    (fun () -> prerr_endline "")
++    o
++*)
++  
++let dfa_state_empty =
++  {final=(no_action, (max_int,TagMap.empty)) ;
++   others=MemMap.empty}
++
++and dfa_state_is_empty {final=(act,_) ; others=o} =
++  act = no_action &&
++  o = MemMap.empty
++
++  
++(* A key is an abstraction on a dfa state,
++   two states with the same key can be made the same by
++   copying some memory cells into others *)
++
++
++module StateSetSet =
++  Set.Make (struct type t = StateSet.t let compare = StateSet.compare end)
++
++type t_equiv = {tag:tag_info ; equiv:StateSetSet.t}
++
++module MemKey =
++  Set.Make
++   (struct
++     type t = t_equiv
++
++     let compare e1 e2 = match Pervasives.compare e1.tag e2.tag with
++     | 0 -> StateSetSet.compare e1.equiv e2.equiv
++     | r -> r
++   end)
++
++type dfa_key = {kstate : StateSet.t ; kmem : MemKey.t}
++
++(* Map a state to its key *)
++let env_to_class m =
++  let env1 = 
++    MemMap.fold
++      (fun _ (tag,s) r ->
++        try
++          let ss = TagMap.find tag r in
++          let r = TagMap.remove tag r in
++          TagMap.add tag (StateSetSet.add s ss) r
++        with 
++        | Not_found ->
++            TagMap.add tag (StateSetSet.add s StateSetSet.empty) r)
++      m TagMap.empty in
++  TagMap.fold
++    (fun tag ss r -> MemKey.add {tag=tag ; equiv=ss} r)
++    env1 MemKey.empty
++
++
++(* trans is nfa_state, m is associated memory map *)
++let inverse_mem_map trans m r =
++  TagMap.fold
++    (fun tag addr r ->
++      try
++        let otag,s = MemMap.find addr r in
++        assert (tag = otag) ;
++        let r = MemMap.remove addr r in
++        MemMap.add addr (tag,StateSet.add trans s) r
++      with
++      | Not_found ->
++          MemMap.add addr (tag,StateSet.add trans StateSet.empty) r)
++    m r
++
++let inverse_mem_map_other n (_,m) r = inverse_mem_map (OnChars n) m r
++
++let get_key {final=(act,(_,m_act)) ; others=o} =
++  let env =
++    MemMap.fold inverse_mem_map_other
++      o
++      (if act = no_action then MemMap.empty
++      else inverse_mem_map (ToAction act) m_act MemMap.empty) in
++  let state_key =
++    MemMap.fold (fun n _ r -> StateSet.add (OnChars n) r) o
++      (if act=no_action then StateSet.empty
++      else StateSet.add (ToAction act) StateSet.empty) in
++  let mem_key = env_to_class  env in
++  {kstate = state_key ; kmem = mem_key}
++
++
++let key_compare k1 k2 = match StateSet.compare k1.kstate k2.kstate with
++| 0 -> MemKey.compare k1.kmem k2.kmem
++| r -> r
++
++(* Association dfa_state -> state_num *)
++        
 +module StateMap =
-+  Map.Make(struct type t = TransSet.t let compare = TransSet.compare end)
++  Map.Make(struct type t = dfa_key let compare = key_compare end)
 +
 +let state_map = ref (StateMap.empty : int StateMap.t)
-+let todo = (Stack.create() : (TransSet.t * int) Stack.t)
++let todo = Stack.create() 
 +let next_state_num = ref 0
++let next_mem_cell = ref 0
++let temp_pending = ref false
++let tag_cells = Hashtbl.create 17 
++let state_table = Table.create dfa_state_empty
++
 +
 +let reset_state_mem () =
 +  state_map := StateMap.empty;
 +  Stack.clear todo;
-+  next_state_num := 0
++  next_state_num := 0 ;  
++  let _ = Table.trim state_table in
++  ()
++
++(* Allocation of memory cells *)
++let reset_cell_mem ntags =
++  next_mem_cell := ntags ;
++  Hashtbl.clear tag_cells ;
++  temp_pending := false
++
++let do_alloc_temp () =
++  temp_pending := true ;
++  let n = !next_mem_cell in
++  n
++
++let do_alloc_cell used t =
++  let available =
++    try Hashtbl.find tag_cells t with Not_found -> Ints.empty in
++  try
++    Ints.choose (Ints.diff available used)
++  with
++  | Not_found ->
++      temp_pending := false ;
++      let n = !next_mem_cell in
++      if n >= 255 then raise Memory_overflow ;
++      Hashtbl.replace tag_cells t (Ints.add n available) ;
++      incr next_mem_cell ;
++      n
++
++let is_old_addr a = a >= 0
++and is_new_addr a = a < 0
++
++let old_in_map m r =
++  TagMap.fold
++    (fun _ addr r ->
++      if is_old_addr addr then
++        Ints.add addr r
++      else
++        r)
++    m r
++
++let alloc_map used m mvs =
++  TagMap.fold
++    (fun tag a (r,mvs) ->
++      let a,mvs =
++        if is_new_addr a then
++          let a = do_alloc_cell used tag in
++          a,Ints.add a mvs
++        else a,mvs in
++      TagMap.add tag a r,mvs)
++    m (TagMap.empty,mvs)
++
++let create_new_state {final=(act,(_,m_act)) ; others=o} =
++  let used =
++    MemMap.fold (fun _ (_,m) r -> old_in_map m r)
++      o (old_in_map m_act Ints.empty) in
++
++  let new_m_act,mvs  = alloc_map used m_act Ints.empty in
++  let new_o,mvs =
++    MemMap.fold (fun k (x,m) (r,mvs) ->
++      let m,mvs = alloc_map used m mvs in
++      MemMap.add k (x,m) r,mvs)
++      o (MemMap.empty,mvs) in
++  {final=(act,(0,new_m_act)) ; others=new_o},
++  Ints.fold (fun x r -> Set x::r) mvs []
++
++type new_addr_gen = {mutable count : int ; mutable env : int TagMap.t}
++
++let create_new_addr_gen () = {count = -1 ; env = TagMap.empty}
++
++let alloc_new_addr tag r =
++  try
++    TagMap.find tag r.env
++  with
++  | Not_found ->
++      let a = r.count in
++      r.count <- a-1 ;
++      r.env <- TagMap.add tag a r.env ;
++      a
++
++
++let create_mem_map tags gen =
++  Tags.fold
++    (fun tag r -> TagMap.add tag (alloc_new_addr tag gen) r)
++    tags TagMap.empty
++
++let create_init_state pos =
++  let gen = create_new_addr_gen () in
++  let st =
++    TransSet.fold
++      (fun (t,tags) st ->
++        match t with
++        | ToAction n ->
++            let on,otags = st.final in
++            if n < on then
++              {st with final = (n, (0,create_mem_map tags gen))}
++            else
++              st
++        | OnChars n ->
++            try
++              let _ = MemMap.find n st.others in assert false
++            with
++            | Not_found ->
++                {st with others =
++                  MemMap.add n (0,create_mem_map tags gen) st.others})
++      pos dfa_state_empty in
++  st
++
++
++let get_map t st = match t with
++| ToAction _ -> let _,(_,m) = st.final in m
++| OnChars n  ->
++    let (_,m) = MemMap.find n st.others in
++    m
++
++let dest = function | Copy (d,_) | Set d  -> d
++and orig = function | Copy (_,o) -> o | Set _ -> -1 
++
++let pmv oc mv = fprintf oc "%d <- %d" (dest mv) (orig mv)
++let pmvs oc mvs =
++  List.iter (fun mv -> fprintf oc "%a " pmv  mv) mvs ;
++  output_char oc '\n' ; flush oc
++
++    
++(* Topological sort << a la louche >> *)
++let sort_mvs mvs =
++  let rec do_rec r mvs = match mvs with
++  | [] -> r
++  | _  ->
++      let dests =
++        List.fold_left
++          (fun r mv -> Ints.add (dest mv) r)
++          Ints.empty mvs in
++      let rem,here =
++        List.partition
++          (fun mv -> Ints.mem (orig mv) dests)
++          mvs in
++      match here with
++      | [] ->
++          begin match rem with
++          | Copy (d,_)::_ ->
++              let d' = do_alloc_temp () in
++              Copy (d',d)::
++              do_rec r
++                (List.map
++                   (fun mv ->
++                     if orig mv = d then
++                       Copy (dest mv,d')
++                     else
++                       mv)
++                   rem)
++          | _ -> assert false
++          end
++      | _  -> do_rec (here@r) rem  in
++  do_rec [] mvs
++      
++let move_to mem_key src tgt =
++  let mvs =
++    MemKey.fold
++      (fun {tag=tag ; equiv=m} r ->
++        StateSetSet.fold
++          (fun s r ->
++            try
++              let t = StateSet.choose s  in
++              let src = TagMap.find tag (get_map t src)
++              and tgt = TagMap.find tag (get_map t tgt) in
++              if src <> tgt then begin
++                if is_new_addr src then
++                  Set tgt::r
++                else
++                  Copy (tgt, src)::r
++              end else
++                r
++            with
++            | Not_found -> assert false)
++          m r)
++      mem_key [] in
++(* Moves are topologically sorted *)
++  sort_mvs mvs
++
 +
 +let get_state st = 
++  let key = get_key st in
 +  try
-+    StateMap.find st !state_map
++    let num = StateMap.find key !state_map in
++    num,move_to key.kmem st (Table.get state_table num)
 +  with Not_found ->
 +    let num = !next_state_num in
 +    incr next_state_num;
-+    state_map := StateMap.add st num !state_map;
++    let st,mvs = create_new_state st in
++    Table.emit state_table st ;
++    state_map := StateMap.add key num !state_map;
 +    Stack.push (st, num) todo;
-+    num
++    num,mvs
 +
-+let map_on_all_states f =
-+  let res = ref [] in
++let map_on_all_states f old_res =
++  let res = ref old_res in
 +  begin try
 +    while true do
 +      let (st, i) = Stack.pop todo in
@@ -907,50 +2144,230 @@ diff -urN wlex-20021107-/lex/lexgen.ml wlex-20021107/lex/lexgen.ml
 +  !res
 +
 +let goto_state st =
-+  if TransSet.is_empty st then Backtrack else Goto (get_state st)
++  if
++    dfa_state_is_empty st
++  then
++    Backtrack,[]
++  else
++    let n,moves = get_state st in
++    Goto n,moves
 +
-+let transition_from chars follow pos_set = 
-+  let tr = Array.create 257 TransSet.empty in
-+  let shift = Array.create 257 Backtrack in
-+    List.iter
-+      (fun pos ->
-+        List.iter
-+          (fun c ->
-+             tr.(c) <- TransSet.union tr.(c) follow.(pos))
-+          chars.(pos))
-+      pos_set;
-+    for i = 0 to 256 do
-+      shift.(i) <- goto_state tr.(i)
-+    done;
-+    shift
++(****************************)
++(* compute reachable states *)
++(****************************)
 +
-+let translate_state chars follow state =
-+  match split_trans_set state with
-+    (n, []) -> Perform n
-+  | (n, ps) -> Shift((if n = no_action then No_remember else Remember n),
-+                     transition_from chars follow ps)
++let add_tags_to_map gen tags m =
++  Tags.fold
++    (fun tag m ->
++      let m = TagMap.remove tag m in
++      TagMap.add tag (alloc_new_addr tag gen) m)
++    tags m
++
++let apply_transition gen r pri m = function
++  | ToAction n,tags ->
++      let on,(opri,_) = r.final in
++      if n < on || (on=n && pri < opri) then 
++        let m = add_tags_to_map gen tags m in
++        {r with final=n,(pri,m)}
++      else r
++  |  OnChars n,tags ->
++      try
++        let (opri,_) = MemMap.find n r.others in
++        if pri < opri then
++          let m = add_tags_to_map gen tags m in          
++          {r with others=MemMap.add n (pri,m) (MemMap.remove n r.others)}
++        else
++          r
++      with
++      | Not_found ->
++          let m = add_tags_to_map gen tags m in
++          {r with others=MemMap.add n (pri,m) r.others}
++
++(* add transitions ts to new state r
++   transitions in ts start from state pri and memory map m
++*)
++let apply_transitions gen r pri m ts =
++  TransSet.fold
++    (fun t r -> apply_transition gen r pri m t)
++    ts r
++
++
++(* For a given nfa_state pos, refine char partition *)  
++let rec split_env gen follow pos m s = function
++  | [] -> assert false
++  | (s1,st1) as p::rem ->
++      let here = Cset.inter s s1 in
++      if Cset.is_empty here then
++        p::split_env gen follow pos m s rem
++      else
++        let rest = Cset.diff s here in
++        let rem =
++          if Cset.is_empty rest then
++            rem
++          else
++            split_env gen follow pos m rest rem
++        and new_st = apply_transitions gen st1 pos m follow in        
++        let stay = Cset.diff s1 here in
++        if Cset.is_empty stay then
++          (here, new_st)::rem
++        else
++          (stay, st1)::(here, new_st)::rem
++        
++
++(* For all nfa_state pos in a dfa state st *)
++let comp_shift gen chars follow st =
++  MemMap.fold
++    (fun pos (_,m) env -> split_env gen follow.(pos) pos m chars.(pos) env)
++    st [Cset.all_chars_eof,dfa_state_empty]
++        
++
++let reachs chars follow st =
++  let gen = create_new_addr_gen () in
++(* build a association list (char set -> new state) *)
++  let env = comp_shift gen chars follow st in
++(* change it into (char set -> new state_num) *)
++  let env =
++    List.map
++      (fun (s,dfa_state) -> s,goto_state dfa_state) env in
++(* finally build the char indexed array -> new state num *)
++  let shift = Cset.env_to_array env in
++  shift  
++
++
++let get_tag_mem n env t =
++  try
++    TagMap.find t env.(n)
++  with
++  | Not_found -> assert false
++
++let do_tag_actions n env  m =
++
++  let used,r =
++    TagMap.fold (fun t m (used,r) ->
++      let a = get_tag_mem n env t in
++      Ints.add a used,SetTag (a,m)::r) m (Ints.empty,[]) in
++  let _,r =
++    TagMap.fold
++      (fun tag m (used,r) ->
++        if not (Ints.mem m used) && tag.start then
++          Ints.add m used, EraseTag m::r
++        else
++          used,r)
++      env.(n) (used,r) in
++  r
++  
++    
++let translate_state shortest_match tags chars follow st =
++  let (n,(_,m)) = st.final in
++  if MemMap.empty = st.others then
++    Perform (n,do_tag_actions n tags m)
++  else if shortest_match then begin
++    if n=no_action then
++      Shift (No_remember,reachs chars follow st.others)
++    else
++      Perform(n, do_tag_actions n tags m)
++  end else begin
++    Shift (
++    (if n = no_action then
++      No_remember
++    else
++      Remember (n,do_tag_actions n tags m)),
++    reachs chars follow st.others)
++  end
++
++(*
++let dtags chan tags =
++  Tags.iter
++    (fun t -> fprintf chan " %a" dtag t)
++    tags
++  
++let dtransset s =
++  TransSet.iter
++    (fun trans -> match trans with
++    | OnChars i,tags ->
++        eprintf " (-> %d,%a)" i dtags tags
++    | ToAction i,tags ->
++        eprintf " ([%d],%a)" i dtags tags)
++    s
++
++let dfollow t =
++  eprintf "follow=[" ;
++  for i = 0 to Array.length t-1 do
++    eprintf "%d:" i ;
++    dtransset t.(i)
++  done ;
++  prerr_endline "]"
++*)
++
++let make_tag_entry id start act a r = match a with
++  | Sum (Mem m,0) ->
++      TagMap.add {id=id ; start=start ; action=act} m r
++  | _ -> r
++
++let extract_tags l =
++  let envs = Array.create (List.length l) TagMap.empty in
++  List.iter
++    (fun (act,m,_) ->
++      envs.(act) <-
++         List.fold_right
++           (fun (x,v) r -> match v with
++           | Ident_char (_,t) -> make_tag_entry x true act t r
++           | Ident_string (_,t1,t2) ->
++               make_tag_entry x true act t1
++               (make_tag_entry x false act t2 r))
++           m TagMap.empty)
++    l ;
++  envs
++
 +
 +let make_dfa lexdef =
 +  let (chars, entry_list) = encode_lexdef lexdef in
 +  let follow = followpos (Array.length chars) entry_list in
-+  reset_state_mem();
++(*
++  dfollow follow ;
++*)
++  reset_state_mem () ;
++  let r_states = ref [] in
 +  let initial_states =
 +    List.map
-+      (fun le ->
++      (fun (le,args,shortest) ->
++        let tags = extract_tags le.lex_actions in
++        reset_cell_mem le.lex_mem_tags ;
++        let pos_set = firstpos le.lex_regexp in
++(*
++        prerr_string "trans={" ; dtransset pos_set ; prerr_endline "}" ;
++*)
++        let init_state = create_init_state pos_set in
++        let init_num = get_state init_state in
++        r_states :=
++           map_on_all_states
++             (translate_state shortest tags chars follow) !r_states ;
 +        { auto_name = le.lex_name;
-+          auto_args = le.lex_args;
-+          auto_initial_state = get_state(firstpos le.lex_regexp);
++          auto_args = args ; 
++          auto_mem_size =
++            (if !temp_pending then !next_mem_cell+1 else !next_mem_cell) ;
++          auto_initial_state = init_num ;
 +          auto_actions = le.lex_actions })
 +      entry_list in
-+  let states = map_on_all_states (translate_state chars follow) in
-+  let actions = Array.create !next_state_num (Perform 0) in
++  let states = !r_states in
++(*
++  prerr_endline "** states **" ;
++  for i = 0 to !next_state_num-1 do
++    eprintf "+++ %d +++\n" i ;
++    dstate (Table.get state_table i) ;
++    prerr_endline ""
++  done ;
++  eprintf "%d states\n" !next_state_num ;
++*)
++  let actions = Array.create !next_state_num (Perform (0,[])) in
 +  List.iter (fun (act, i) -> actions.(i) <- act) states;
-+  reset_state_mem();
++  reset_state_mem () ;
++  reset_cell_mem  0 ;
 +  (initial_states, actions)
-diff -urN wlex-20021107-/lex/lexgen.mli wlex-20021107/lex/lexgen.mli
---- wlex-20021107-/lex/lexgen.mli	1970-01-01 01:00:00.000000000 +0100
-+++ wlex-20021107/lex/lexgen.mli	2003-05-29 13:49:49.000000000 +0200
-@@ -0,0 +1,40 @@
+diff -urN wlex-20030827.orig/lex/lexgen.mli wlex-20030827/lex/lexgen.mli
+--- wlex-20030827.orig/lex/lexgen.mli	1970-01-01 01:00:00.000000000 +0100
++++ wlex-20030827/lex/lexgen.mli	2003-09-03 23:54:22.000000000 +0200
+@@ -0,0 +1,59 @@
 +(***********************************************************************)
 +(*                                                                     *)
 +(*                           Objective Caml                            *)
@@ -965,36 +2382,55 @@ diff -urN wlex-20021107-/lex/lexgen.mli wlex-20021107/lex/lexgen.mli
 +
 +(* $Id$ *)
 +
++
++(* raised when there are too many bindings (>= 254 memory cells) *)
++exception Memory_overflow 
++
++
 +(* Representation of automata *)
 +
++
 +type automata =
-+    Perform of int
-+  | Shift of automata_trans * automata_move array
++    Perform of int * tag_action list
++  | Shift of automata_trans * (automata_move * memory_action list) array
 +and automata_trans =
 +    No_remember
-+  | Remember of int
++  | Remember of int * tag_action list
 +and automata_move =
 +    Backtrack
 +  | Goto of int
++and memory_action =
++  | Copy of int * int
++  | Set of int
++
++and tag_action = SetTag of int * int | EraseTag of int
++
 +
 +(* Representation of entry points *)
++type tag_base = Start | End | Mem of int
++type tag_addr = Sum of (tag_base * int)        
++type ident_info =
++  | Ident_string of bool * tag_addr * tag_addr
++  | Ident_char of bool * tag_addr
++type t_env = (string * ident_info) list
 +
 +type ('args,'action) automata_entry =
 +  { auto_name: string;
-+    auto_args: 'args;
-+    auto_initial_state: int;
-+    auto_actions: (int * 'action) list }
++    auto_args: 'args ;
++    auto_mem_size : int ;
++    auto_initial_state: int * memory_action list ;
++    auto_actions: (int * t_env * 'action) list }
 +
 +(* The entry point *)
 +
 +val make_dfa :
-+  ((string * 'arg) * (Syntax.regular_expression * 'action) list) list ->
-+  ('arg, 'action) automata_entry list * automata array
++  ('args, 'action) Syntax.entry list ->
++  ('args, 'action) automata_entry list * automata array
 +
-diff -urN wlex-20021107-/lex/main.ml wlex-20021107/lex/main.ml
---- wlex-20021107-/lex/main.ml	1970-01-01 01:00:00.000000000 +0100
-+++ wlex-20021107/lex/main.ml	2003-05-29 13:49:49.000000000 +0200
-@@ -0,0 +1,67 @@
+diff -urN wlex-20030827.orig/lex/main.ml wlex-20030827/lex/main.ml
+--- wlex-20030827.orig/lex/main.ml	1970-01-01 01:00:00.000000000 +0100
++++ wlex-20030827/lex/main.ml	2003-09-03 23:54:22.000000000 +0200
+@@ -0,0 +1,101 @@
 +(***********************************************************************)
 +(*                                                                     *)
 +(*                           Objective Caml                            *)
@@ -1013,33 +2449,63 @@ diff -urN wlex-20021107-/lex/main.ml wlex-20021107/lex/main.ml
 +
 +open Syntax
 +open Lexgen
-+open Output
 +
++let ml_automata = ref false
++let source_name = ref None
++let output_name = ref None
++
++let usage = "usage: ocamlex [options] sourcefile"
++
++let specs =
++  ["-ml", Arg.Set ml_automata,
++    " Output code that does not use the Lexing module built-in automata interpreter";
++    "-o", Arg.String (fun x -> source_name := Some x),
++    " <file>  Set output file name to <file>";
++  ] 
++
++let _ =
++  Arg.parse
++    specs
++    (fun name -> source_name := Some name)
++    usage
++
++  
 +let main () =
-+  if Array.length Sys.argv != 2 then begin
-+    prerr_endline "Usage: ocamllex <input file>";
-+    exit 2
-+  end;
-+  let source_name = Sys.argv.(1) in
-+  let dest_name =
-+    if Filename.check_suffix source_name ".mll" then
-+      Filename.chop_suffix source_name ".mll" ^ ".ml"
-+    else
-+      source_name ^ ".ml" in
++
++  let source_name = match !source_name with
++  | None -> Arg.usage specs usage ; exit 2 
++  | Some name -> name in
++  let dest_name = match !output_name with
++  | Some name -> name
++  | None ->
++      if Filename.check_suffix source_name ".mll" then
++        Filename.chop_suffix source_name ".mll" ^ ".ml"
++      else
++        source_name ^ ".ml" in
++
 +  let ic = open_in_bin source_name in
 +  let oc = open_out dest_name in
++  let tr = Common.open_tracker dest_name oc in
 +  let lexbuf = Lexing.from_channel ic in
 +  try
 +    let def = Parser.lexer_definition Lexer.main lexbuf in
 +    let (entries, transitions) = Lexgen.make_dfa def.entrypoints in
-+    let tables = Compact.compact_tables transitions in
-+    Output.output_lexdef source_name ic oc
-+                         def.header tables entries def.trailer;
++    if !ml_automata then begin
++      Outputbis.output_lexdef
++        source_name ic oc tr
++        def.header entries transitions def.trailer
++    end else begin
++       let tables = Compact.compact_tables transitions in
++       Output.output_lexdef source_name ic oc tr
++         def.header tables entries def.trailer
++    end;
 +    close_in ic;
-+    close_out oc
++    close_out oc;
++    Common.close_tracker tr;
 +  with exn ->
 +    close_in ic;
 +    close_out oc;
++    Common.close_tracker tr;
 +    Sys.remove dest_name;
 +    begin match exn with
 +      Parsing.Parse_error ->
@@ -1051,6 +2517,10 @@ diff -urN wlex-20021107-/lex/main.ml wlex-20021107/lex/main.ml
 +        Printf.fprintf stderr
 +          "File \"%s\", line %d, character %d: %s.\n"
 +          source_name line col msg
++    | Lexgen.Memory_overflow ->
++        Printf.fprintf stderr
++          "File \"%s\":\n Position memory overflow, too many bindings\n"
++          source_name        
 +    | Output.Table_overflow ->
 +        Printf.fprintf stderr
 +          "File \"%s\":\ntransition table overflow, automaton is too big\n"
@@ -1060,12 +2530,12 @@ diff -urN wlex-20021107-/lex/main.ml wlex-20021107/lex/main.ml
 +    end;
 +    exit 3
 +
-+let _ = Printexc.catch main (); exit 0
++let _ = (* Printexc.catch *) main (); exit 0
 +
-diff -urN wlex-20021107-/lex/output.ml wlex-20021107/lex/output.ml
---- wlex-20021107-/lex/output.ml	1970-01-01 01:00:00.000000000 +0100
-+++ wlex-20021107/lex/output.ml	2003-05-29 13:49:49.000000000 +0200
-@@ -0,0 +1,124 @@
+diff -urN wlex-20030827.orig/lex/output.ml wlex-20030827/lex/output.ml
+--- wlex-20030827.orig/lex/output.ml	1970-01-01 01:00:00.000000000 +0100
++++ wlex-20030827/lex/output.ml	2003-09-03 23:54:22.000000000 +0200
+@@ -0,0 +1,139 @@
 +(***********************************************************************)
 +(*                                                                     *)
 +(*                           Objective Caml                            *)
@@ -1086,37 +2556,7 @@ diff -urN wlex-20021107-/lex/output.ml wlex-20021107/lex/output.ml
 +open Syntax
 +open Lexgen
 +open Compact
-+
-+(* To copy the ML code fragments *)
-+
-+let copy_buffer = String.create 1024
-+
-+let copy_chars_unix ic oc start stop =
-+  let n = ref (stop - start) in
-+  while !n > 0 do
-+    let m = input ic copy_buffer 0 (min !n 1024) in
-+    output oc copy_buffer 0 m;
-+    n := !n - m
-+  done
-+
-+let copy_chars_win32 ic oc start stop =
-+  for i = start to stop - 1 do
-+    let c = input_char ic in
-+    if c <> '\r' then output_char oc c
-+  done
-+
-+let copy_chars =
-+  match Sys.os_type with
-+    "Win32" | "Cygwin" -> copy_chars_win32
-+  | _       -> copy_chars_unix
-+
-+let copy_chunk sourcefile ic oc loc =
-+  if loc.start_pos < loc.end_pos then begin
-+    fprintf oc "# %d \"%s\"\n" loc.start_line sourcefile;
-+    for i = 1 to loc.start_col do output_char oc ' ' done;
-+    seek_in ic loc.start_pos;
-+    copy_chars ic oc loc.start_pos loc.end_pos
-+  end
++open Common
 +
 +(* To output an array of short ints, encoded as a string *)
 +
@@ -1135,64 +2575,109 @@ diff -urN wlex-20021107-/lex/output.ml wlex-20021107/lex/output.ml
 +  done;
 +  output_string oc "\""
 +
++let output_byte_array oc v =
++  output_string oc "   \"";
++  for i = 0 to Array.length v - 1 do
++    output_byte oc (v.(i) land 0xFF);
++    if i land 15 = 15 then output_string oc "\\\n    "
++  done;
++  output_string oc "\""
++
 +(* Output the tables *)
 +
 +let output_tables oc tbl =
-+  output_string oc "let lex_tables = {\n";
++  output_string oc "let __ocaml_lex_tables = {\n";
++
 +  fprintf oc "  Lexing.lex_base = \n%a;\n" output_array tbl.tbl_base;
 +  fprintf oc "  Lexing.lex_backtrk = \n%a;\n" output_array tbl.tbl_backtrk;
 +  fprintf oc "  Lexing.lex_default = \n%a;\n" output_array tbl.tbl_default;
 +  fprintf oc "  Lexing.lex_trans = \n%a;\n" output_array tbl.tbl_trans;
-+  fprintf oc "  Lexing.lex_check = \n%a\n" output_array tbl.tbl_check;
++  fprintf oc "  Lexing.lex_check = \n%a;\n" output_array tbl.tbl_check;
++  fprintf oc "  Lexing.lex_base_code = \n%a;\n" output_array tbl.tbl_base_code;
++
++  fprintf oc "  Lexing.lex_backtrk_code = \n%a;\n"
++    output_array tbl.tbl_backtrk_code;
++  fprintf oc "  Lexing.lex_default_code = \n%a;\n"
++    output_array tbl.tbl_default_code;
++  fprintf oc "  Lexing.lex_trans_code = \n%a;\n"
++    output_array tbl.tbl_trans_code;
++  fprintf oc "  Lexing.lex_check_code = \n%a;\n"
++    output_array tbl.tbl_check_code;
++  fprintf oc "  Lexing.lex_code = \n%a;\n" output_byte_array tbl.tbl_code;
++
 +  output_string oc "}\n\n"
++
 +
 +(* Output the entries *)
 +
-+let output_entry sourcefile ic oc e =
-+  fprintf oc "%s lexbuf = __ocaml_lex_%s_rec lexbuf %d\n"
-+          e.auto_name e.auto_name e.auto_initial_state;
-+  fprintf oc "and __ocaml_lex_%s_rec lexbuf state =\n" e.auto_name;
-+  fprintf oc "  match Lexing.engine lex_tables state lexbuf with\n    ";
-+  let first = ref true in
++let output_entry sourcefile ic oc oci e =
++  let init_num, init_moves = e.auto_initial_state in
++  fprintf oc "%s %alexbuf =
++  %a%a  __ocaml_lex_%s_rec %alexbuf %d\n"
++    e.auto_name
++    output_args  e.auto_args 
++    (fun oc x ->
++      if x > 0 then
++        fprintf oc "lexbuf.Lexing.lex_mem <- Array.create %d (-1) ; " x)
++    e.auto_mem_size
++    (output_memory_actions "  ") init_moves
++    e.auto_name
++    output_args e.auto_args
++    init_num;
++  fprintf oc "and __ocaml_lex_%s_rec %alexbuf __ocaml_lex_state =\n"
++    e.auto_name output_args e.auto_args ;
++  fprintf oc "  match Lexing.%sengine"
++          (if e.auto_mem_size == 0 then "" else "new_");
++  fprintf oc " __ocaml_lex_tables __ocaml_lex_state lexbuf with\n    ";
 +  List.iter
-+    (fun (num, loc) ->
-+      if !first then first := false else fprintf oc "  | ";
-+      fprintf oc "%d -> (\n" num;
-+      copy_chunk sourcefile ic oc loc;
-+      fprintf oc ")\n")
++    (fun (num, env, loc) ->
++      fprintf oc "  | ";
++      fprintf oc "%d ->\n" num;
++      output_env oc env;
++      copy_chunk sourcefile ic oc oci loc true;
++      fprintf oc "\n")
 +    e.auto_actions;
 +  fprintf oc "  | n -> lexbuf.Lexing.refill_buff lexbuf; \
-+                                __ocaml_lex_%s_rec lexbuf n\n\n"
-+          e.auto_name
++                                __ocaml_lex_%s_rec %alexbuf n\n\n"
++          e.auto_name output_args e.auto_args
 +
 +(* Main output function *)
 +
 +exception Table_overflow
 +
-+let output_lexdef sourcefile ic oc header tables entry_points trailer =
++let output_lexdef sourcefile ic oc oci header tables entry_points trailer =
 +  Printf.printf "%d states, %d transitions, table size %d bytes\n"
 +    (Array.length tables.tbl_base)
 +    (Array.length tables.tbl_trans)
 +    (2 * (Array.length tables.tbl_base + Array.length tables.tbl_backtrk +
 +          Array.length tables.tbl_default + Array.length tables.tbl_trans +
 +          Array.length tables.tbl_check));
++  let size_groups =
++    (2 * (Array.length tables.tbl_base_code +
++          Array.length tables.tbl_backtrk_code +
++          Array.length tables.tbl_default_code +
++          Array.length tables.tbl_trans_code +
++          Array.length tables.tbl_check_code) +
++    Array.length tables.tbl_code) in
++  if  size_groups > 0 then
++    Printf.printf "%d additional bytes used for bindings\n" size_groups ;
 +  flush stdout;
 +  if Array.length tables.tbl_trans > 0x8000 then raise Table_overflow;
-+  copy_chunk sourcefile ic oc header;
++  copy_chunk sourcefile ic oc oci header false;
 +  output_tables oc tables;
 +  begin match entry_points with
 +    [] -> ()
 +  | entry1 :: entries ->
-+      output_string oc "let rec "; output_entry sourcefile ic oc entry1;
++      output_string oc "let rec "; output_entry sourcefile ic oc oci entry1;
 +      List.iter
-+        (fun e -> output_string oc "and "; output_entry sourcefile ic oc e)
++        (fun e -> output_string oc "and "; output_entry sourcefile ic oc oci e)
 +        entries;
 +      output_string oc ";;\n\n";
 +  end;
-+  copy_chunk sourcefile ic oc trailer
-diff -urN wlex-20021107-/lex/output.mli wlex-20021107/lex/output.mli
---- wlex-20021107-/lex/output.mli	1970-01-01 01:00:00.000000000 +0100
-+++ wlex-20021107/lex/output.mli	2003-05-29 13:49:49.000000000 +0200
++  copy_chunk sourcefile ic oc oci trailer false
+diff -urN wlex-20030827.orig/lex/output.mli wlex-20030827/lex/output.mli
+--- wlex-20030827.orig/lex/output.mli	1970-01-01 01:00:00.000000000 +0100
++++ wlex-20030827/lex/output.mli	2003-09-03 23:54:22.000000000 +0200
 @@ -0,0 +1,25 @@
 +(***********************************************************************)
 +(*                                                                     *)
@@ -1211,18 +2696,240 @@ diff -urN wlex-20021107-/lex/output.mli wlex-20021107/lex/output.mli
 +(* Output the DFA tables and its entry points *)
 +
 +val output_lexdef:
-+      string -> in_channel -> out_channel ->
++      string -> in_channel -> out_channel -> Common.line_tracker ->
 +      Syntax.location ->
 +      Compact.lex_tables ->
-+      (unit, Syntax.location) Lexgen.automata_entry list ->
++      (string list, Syntax.location) Lexgen.automata_entry list ->
 +      Syntax.location ->
 +      unit
 +
 +exception Table_overflow
-diff -urN wlex-20021107-/lex/parser.mly wlex-20021107/lex/parser.mly
---- wlex-20021107-/lex/parser.mly	1970-01-01 01:00:00.000000000 +0100
-+++ wlex-20021107/lex/parser.mly	2003-05-29 13:49:49.000000000 +0200
-@@ -0,0 +1,156 @@
+diff -urN wlex-20030827.orig/lex/outputbis.ml wlex-20030827/lex/outputbis.ml
+--- wlex-20030827.orig/lex/outputbis.ml	1970-01-01 01:00:00.000000000 +0100
++++ wlex-20030827/lex/outputbis.ml	2003-09-03 23:54:22.000000000 +0200
+@@ -0,0 +1,193 @@
++(***********************************************************************)
++(*                                                                     *)
++(*                           Objective Caml                            *)
++(*                                                                     *)
++(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
++(*                                                                     *)
++(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
++(*  en Automatique.  All rights reserved.  This file is distributed    *)
++(*  under the terms of the Q Public License version 1.0.               *)
++(*                                                                     *)
++(***********************************************************************)
++
++(* $Id$ *)
++
++(* Output the DFA tables and its entry points *)
++
++open Printf
++open Syntax
++open Lexgen
++open Common
++
++let output_auto_defs oc =
++  fprintf oc "let __ocaml_lex_init_lexbuf lexbuf mem_size =
++  let pos = lexbuf.Lexing.lex_curr_pos in
++  lexbuf.Lexing.lex_mem <- Array.create mem_size (-1) ;
++  lexbuf.Lexing.lex_start_pos <- pos ;
++  lexbuf.Lexing.lex_last_pos <- pos ;
++  lexbuf.Lexing.lex_last_action <- -1
++
++" ;
++  
++  output_string oc
++    "let rec __ocaml_lex_next_char lexbuf =
++  if lexbuf.Lexing.lex_curr_pos >= lexbuf.Lexing.lex_buffer_len then begin
++    if lexbuf.Lexing.lex_eof_reached then
++      256
++    else begin
++      lexbuf.Lexing.refill_buff lexbuf ;
++      __ocaml_lex_next_char lexbuf
++    end
++  end else begin
++    let i = lexbuf.Lexing.lex_curr_pos in
++    let c = lexbuf.Lexing.lex_buffer.[i] in
++    lexbuf.Lexing.lex_curr_pos <- i+1 ;
++    Char.code c
++  end
++
++"
++
++
++let output_pats oc pats = List.iter (fun p -> fprintf oc "|%d" p) pats
++
++let output_action oc mems r =
++  output_memory_actions "    " oc mems ;
++  match r with
++  | Backtrack ->
++    fprintf oc
++      "    lexbuf.Lexing.lex_curr_pos <- lexbuf.Lexing.lex_last_pos ;\n" ;
++    fprintf oc "    lexbuf.Lexing.lex_last_action\n"
++  | Goto n ->
++    fprintf oc "    __ocaml_lex_state%d lexbuf\n" n
++
++let output_pat oc i =
++  if i >= 256 then
++    fprintf oc "|eof"
++  else
++    fprintf oc "|'%s'" (Char.escaped (Char.chr i))
++
++let output_clause oc pats mems r =
++  fprintf oc "(* " ;
++  List.iter (output_pat oc) pats ;
++  fprintf oc " *)\n" ;
++  fprintf oc "  %a ->\n" output_pats pats ;  output_action oc mems r
++
++let output_default_clause oc mems r =
++  fprintf oc "  | _ ->\n" ; output_action oc mems r
++  
++
++let output_moves oc moves =
++  let t = Hashtbl.create 17 in
++  let add_move i (m,mems) =
++    let mems,r = try Hashtbl.find t m with Not_found -> mems,[] in
++    Hashtbl.replace t m (mems,(i::r)) in
++
++  for i = 0 to 256 do
++    add_move i moves.(i)
++  done ;
++
++  let most_frequent = ref Backtrack
++  and most_mems = ref []
++  and size = ref 0 in
++  Hashtbl.iter
++    (fun m (mems,pats) ->
++      let size_m = List.length pats in
++      if size_m > !size then begin
++        most_frequent := m ;
++        most_mems := mems ;
++        size := size_m
++      end)
++    t ;
++  Hashtbl.iter
++    (fun m (mems,pats) ->
++      if m <> !most_frequent then output_clause oc (List.rev pats) mems m)
++    t ;
++  output_default_clause oc !most_mems !most_frequent
++
++  
++let output_tag_actions pref oc mvs =
++  output_string oc "(*" ;
++  List.iter
++    (fun i -> match i with
++    | SetTag (t,m) -> fprintf oc " t%d <- [%d] ;" t m
++    | EraseTag t -> fprintf oc " t%d <- -1 ;" t)
++    mvs ;
++  output_string oc " *)\n" ;
++  List.iter
++    (fun i ->  match i with
++    | SetTag (t,m) ->
++        fprintf oc "%s%a <- %a ;\n"
++          pref output_mem_access t output_mem_access m
++    | EraseTag t ->
++        fprintf oc "%s%a <- -1 ;\n"
++          pref output_mem_access t)
++    mvs
++  
++let output_trans pref oc i trans =
++  fprintf oc "%s __ocaml_lex_state%d lexbuf = " pref i ;
++  match trans with
++  | Perform (n,mvs) ->
++      output_tag_actions "  " oc mvs ;
++      fprintf oc "  %d\n" n
++  | Shift (trans, move) ->
++      begin match trans with
++      | Remember (n,mvs) ->
++          output_tag_actions "  " oc mvs ;
++          fprintf oc
++            "  lexbuf.Lexing.lex_last_pos <- lexbuf.Lexing.lex_curr_pos ;\n" ;
++          fprintf oc "  lexbuf.Lexing.lex_last_action <- %d ;\n" n
++      | No_remember -> ()
++      end ;
++      fprintf oc "  match __ocaml_lex_next_char lexbuf with\n" ;
++      output_moves oc move
++    
++let output_automata oc auto =
++  output_auto_defs oc ;
++  let n = Array.length auto in
++  output_trans "let rec" oc 0 auto.(0) ;
++  for i = 1 to n-1 do
++    output_trans "\nand" oc i auto.(i)
++  done ;
++  output_char oc '\n'
++
++
++(* Output the entries *)
++
++let output_entry sourcefile ic oc tr e =
++  let init_num, init_moves = e.auto_initial_state in
++  fprintf oc "%s %alexbuf =
++  __ocaml_lex_init_lexbuf lexbuf %d; %a
++  let __ocaml_lex_result = __ocaml_lex_state%d lexbuf in
++  lexbuf.Lexing.lex_start_p <- lexbuf.Lexing.lex_curr_p;
++  lexbuf.Lexing.lex_curr_p <- {lexbuf.Lexing.lex_curr_p with
++    Lexing.pos_cnum = lexbuf.Lexing.lex_abs_pos + lexbuf.Lexing.lex_curr_pos};
++  match __ocaml_lex_result with\n"
++      e.auto_name output_args e.auto_args
++      e.auto_mem_size (output_memory_actions "  ") init_moves init_num ;
++  List.iter
++    (fun (num, env, loc) ->
++      fprintf oc "  | ";
++      fprintf oc "%d ->\n" num;
++      output_env oc env ;
++      copy_chunk sourcefile ic oc tr loc true;
++      fprintf oc "\n")
++    e.auto_actions;
++  fprintf oc "  | _ -> raise (Failure \"lexing: empty token\")\n\n\n"
++
++
++(* Main output function *)
++
++let output_lexdef sourcefile ic oc tr header entry_points transitions trailer =
++
++  copy_chunk sourcefile ic oc tr header false;
++  output_automata oc transitions ;
++  begin match entry_points with
++    [] -> ()
++  | entry1 :: entries ->
++      output_string oc "let rec "; output_entry sourcefile ic oc tr entry1;
++      List.iter
++        (fun e -> output_string oc "and "; output_entry sourcefile ic oc tr e)
++        entries;
++      output_string oc ";;\n\n";
++  end;
++  copy_chunk sourcefile ic oc tr trailer false
+diff -urN wlex-20030827.orig/lex/outputbis.mli wlex-20030827/lex/outputbis.mli
+--- wlex-20030827.orig/lex/outputbis.mli	1970-01-01 01:00:00.000000000 +0100
++++ wlex-20030827/lex/outputbis.mli	2003-09-03 23:54:22.000000000 +0200
+@@ -0,0 +1,21 @@
++(***********************************************************************)
++(*                                                                     *)
++(*                           Objective Caml                            *)
++(*                                                                     *)
++(*            Luc Maranget projet Moscova INRIA Rocquencourt           *)
++(*                                                                     *)
++(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
++(*  en Automatique.  All rights reserved.  This file is distributed    *)
++(*  under the terms of the Q Public License version 1.0.               *)
++(*                                                                     *)
++(***********************************************************************)
++
++(* $Id$ *)
++val output_lexdef :
++  string ->
++  in_channel ->
++  out_channel ->
++  Common.line_tracker ->
++  Syntax.location ->
++  (string list, Syntax.location) Lexgen.automata_entry list ->
++  Lexgen.automata array -> Syntax.location -> unit
+diff -urN wlex-20030827.orig/lex/parser.mly wlex-20030827/lex/parser.mly
+--- wlex-20030827.orig/lex/parser.mly	1970-01-01 01:00:00.000000000 +0100
++++ wlex-20030827/lex/parser.mly	2003-09-03 23:54:22.000000000 +0200
+@@ -0,0 +1,174 @@
 +/***********************************************************************/
 +/*                                                                     */
 +/*                           Objective Caml                            */
@@ -1250,30 +2957,31 @@ diff -urN wlex-20021107-/lex/parser.mly wlex-20021107/lex/parser.mly
 +let regexp_for_string s =
 +  let rec re_string n =
 +    if n >= String.length s then Epsilon
-+    else if succ n = String.length s then Characters([Char.code (s.[n])])
-+    else Sequence(Characters([Char.code (s.[n])]), re_string (succ n))
++    else if succ n = String.length s then
++      Characters (Cset.singleton (Char.code s.[n]))
++    else
++      Sequence
++        (Characters(Cset.singleton (Char.code s.[n])),
++         re_string (succ n))
 +  in re_string 0
 +
-+let char_class c1 c2 =
-+  let rec cl n =
-+    if n > c2 then [] else n :: cl(succ n)
-+  in cl c1
++let rec remove_as = function
++  | Bind (e,_) -> remove_as e
++  | Epsilon|Eof|Characters _ as e -> e
++  | Sequence (e1, e2) -> Sequence (remove_as e1, remove_as e2)
++  | Alternative (e1, e2) -> Alternative (remove_as e1, remove_as e2)
++  | Repetition e -> Repetition (remove_as e)
 +
-+let all_chars = char_class 0 255
-+
-+let rec subtract l1 l2 =
-+  match l1 with
-+    [] -> []
-+  | a::r -> if List.mem a l2 then subtract r l2 else a :: subtract r l2
 +%}
 +
 +%token <string> Tident
 +%token <int> Tchar
 +%token <string> Tstring
 +%token <Syntax.location> Taction
-+%token Trule Tparse Tand Tequal Tend Tor Tunderscore Teof Tlbracket Trbracket
-+%token Tstar Tmaybe Tplus Tlparen Trparen Tcaret Tdash Tlet
++%token Trule Tparse Tparse_shortest Tand Tequal Tend Tor Tunderscore Teof Tlbracket Trbracket
++%token Tstar Tmaybe Tplus Tlparen Trparen Tcaret Tdash Tlet Tas
 +
++%right Tas
 +%left Tor
 +%nonassoc CONCAT
 +%nonassoc Tmaybe Tstar Tplus
@@ -1309,15 +3017,25 @@ diff -urN wlex-20021107-/lex/parser.mly wlex-20021107/lex/parser.mly
 +        { [] }
 +;
 +definition:
-+    Tident Tequal entry
-+        { (($1,()),$3) }
++    Tident arguments Tequal Tparse entry
++        { {name=$1 ; shortest=false ; args=$2 ; clauses=$5} }
++  |  Tident arguments Tequal Tparse_shortest entry
++        { {name=$1 ; shortest=true ; args=$2 ; clauses=$5} }
 +;
++
++arguments:
++    Tident arguments        { $1::$2 }
++|     /*epsilon*/           { [] }
++;
++
++
 +entry:
-+    Tparse case rest_of_entry
++    case rest_of_entry
++        { $1::List.rev $2 }
++|   Tor case rest_of_entry
 +        { $2::List.rev $3 }
-+  | Tparse rest_of_entry
-+        { List.rev $2 }
 +;
++
 +rest_of_entry:
 +    rest_of_entry Tor case
 +        { $3::$1 }
@@ -1330,11 +3048,11 @@ diff -urN wlex-20021107-/lex/parser.mly wlex-20021107/lex/parser.mly
 +;
 +regexp:
 +    Tunderscore
-+        { Characters all_chars }
++        { Characters Cset.all_chars }
 +  | Teof
-+        { Characters [256] }
++        { Eof }
 +  | Tchar
-+        { Characters [$1] }
++        { Characters (Cset.singleton $1) }
 +  | Tstring
 +        { regexp_for_string $1 }
 +  | Tlbracket char_class Trbracket
@@ -1342,9 +3060,9 @@ diff -urN wlex-20021107-/lex/parser.mly wlex-20021107/lex/parser.mly
 +  | regexp Tstar
 +        { Repetition $1 }
 +  | regexp Tmaybe
-+        { Alternative($1, Epsilon) }
++        { Alternative(Epsilon, $1) }
 +  | regexp Tplus
-+        { Sequence($1, Repetition $1) }
++        { Sequence(Repetition (remove_as $1), $1) }
 +  | regexp Tor regexp
 +        { Alternative($1,$3) }
 +  | regexp regexp %prec CONCAT
@@ -1361,28 +3079,83 @@ diff -urN wlex-20021107-/lex/parser.mly wlex-20021107/lex/parser.mly
 +            prerr_int (Parsing.symbol_start());
 +            prerr_newline();
 +            exit 2 }
++  | regexp Tas ident
++        {Bind ($1, $3)}
 +;
++
++ident:
++  Tident {$1}
++;
++
 +char_class:
 +    Tcaret char_class1
-+        { subtract all_chars $2 }
++        { Cset.complement $2 }
 +  | char_class1
 +        { $1 }
 +;
 +char_class1:
 +    Tchar Tdash Tchar
-+        { char_class $1 $3 }
++        { Cset.interval $1 $3 }
 +  | Tchar
-+        { [$1] }
++        { Cset.singleton $1 }
 +  | char_class1 char_class1 %prec CONCAT
-+        { $1 @ $2 }
++        { Cset.union $1 $2 }
 +;
 +
 +%%
 +
-diff -urN wlex-20021107-/lex/syntax.ml wlex-20021107/lex/syntax.ml
---- wlex-20021107-/lex/syntax.ml	1970-01-01 01:00:00.000000000 +0100
-+++ wlex-20021107/lex/syntax.ml	2003-05-29 13:49:49.000000000 +0200
-@@ -0,0 +1,33 @@
+diff -urN wlex-20030827.orig/lex/syntax.ml wlex-20030827/lex/syntax.ml
+--- wlex-20030827.orig/lex/syntax.ml	1970-01-01 01:00:00.000000000 +0100
++++ wlex-20030827/lex/syntax.ml	2003-09-03 23:54:22.000000000 +0200
+@@ -0,0 +1,44 @@
++(***********************************************************************)
++(*                                                                     *)
++(*                           Objective Caml                            *)
++(*                                                                     *)
++(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
++(*                                                                     *)
++(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
++(*  en Automatique.  All rights reserved.  This file is distributed    *)
++(*  under the terms of the Q Public License version 1.0.               *)
++(*                                                                     *)
++(***********************************************************************)
++
++(* $Id$ *)
++
++(* This apparently useless implmentation file is in fact required
++   by the pa_ocamllex syntax extension *)
++
++(* The shallow abstract syntax *)
++
++type location =
++    { start_pos: int;
++      end_pos: int;
++      start_line: int;
++      start_col: int }
++
++type regular_expression =
++    Epsilon
++  | Characters of Cset.t
++  | Eof
++  | Sequence of regular_expression * regular_expression
++  | Alternative of regular_expression * regular_expression
++  | Repetition of regular_expression
++  | Bind of regular_expression * string
++
++type ('arg,'action) entry =
++  {name:string ;
++   shortest : bool ;
++   args : 'arg ;
++   clauses : (regular_expression * 'action) list}
++
++type  lexer_definition =
++    { header: location;
++      entrypoints: ((string list, location) entry) list;
++      trailer: location }
+diff -urN wlex-20030827.orig/lex/syntax.mli wlex-20030827/lex/syntax.mli
+--- wlex-20030827.orig/lex/syntax.mli	1970-01-01 01:00:00.000000000 +0100
++++ wlex-20030827/lex/syntax.mli	2003-09-03 23:54:22.000000000 +0200
+@@ -0,0 +1,41 @@
 +(***********************************************************************)
 +(*                                                                     *)
 +(*                           Objective Caml                            *)
@@ -1407,49 +3180,117 @@ diff -urN wlex-20021107-/lex/syntax.ml wlex-20021107/lex/syntax.ml
 +
 +type regular_expression =
 +    Epsilon
-+  | Characters of int list
++  | Characters of Cset.t
++  | Eof
 +  | Sequence of regular_expression * regular_expression
 +  | Alternative of regular_expression * regular_expression
 +  | Repetition of regular_expression
++  | Bind of regular_expression * string
 +
-+type lexer_definition =
++type ('arg,'action) entry =
++  {name:string ;
++   shortest : bool ;
++   args : 'arg ;
++   clauses : (regular_expression * 'action) list}
++
++type  lexer_definition =
 +    { header: location;
-+      entrypoints: ((string * unit) * (regular_expression * location) list) list;
++      entrypoints: ((string list, location) entry) list;
 +      trailer: location }
-diff -urN wlex-20021107-/lex/syntax.mli wlex-20021107/lex/syntax.mli
---- wlex-20021107-/lex/syntax.mli	1970-01-01 01:00:00.000000000 +0100
-+++ wlex-20021107/lex/syntax.mli	2003-05-29 13:49:49.000000000 +0200
-@@ -0,0 +1,33 @@
+diff -urN wlex-20030827.orig/lex/table.ml wlex-20030827/lex/table.ml
+--- wlex-20030827.orig/lex/table.ml	1970-01-01 01:00:00.000000000 +0100
++++ wlex-20030827/lex/table.ml	2003-09-03 23:54:22.000000000 +0200
+@@ -0,0 +1,56 @@
 +(***********************************************************************)
 +(*                                                                     *)
 +(*                           Objective Caml                            *)
 +(*                                                                     *)
-+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
++(*            Luc Maranget, projet Moscova, INRIA Rocquencourt         *)
 +(*                                                                     *)
-+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
++(*  Copyright 2002 Institut National de Recherche en Informatique et   *)
 +(*  en Automatique.  All rights reserved.  This file is distributed    *)
 +(*  under the terms of the Q Public License version 1.0.               *)
 +(*                                                                     *)
 +(***********************************************************************)
 +
-+(* $Id$ *)
++type 'a t = {mutable next : int ; mutable data : 'a array}
 +
-+(* The shallow abstract syntax *)
++let default_size = 32
++;;
 +
-+type location =
-+    { start_pos: int;
-+      end_pos: int;
-+      start_line: int;
-+      start_col: int }
++let create x = {next = 0 ; data = Array.create default_size x}
++and reset t = t.next <- 0
++;;
 +
-+type regular_expression =
-+    Epsilon
-+  | Characters of int list
-+  | Sequence of regular_expression * regular_expression
-+  | Alternative of regular_expression * regular_expression
-+  | Repetition of regular_expression
++let incr_table table new_size =
++  let t = Array.create new_size table.data.(0) in
++  Array.blit table.data 0 t 0 (Array.length table.data) ;
++  table.data <- t
 +
-+type lexer_definition =
-+    { header: location;
-+      entrypoints: ((string * unit) * (regular_expression * location) list) list;
-+      trailer: location }
++let emit table i =
++ let size = Array.length table.data in
++ if table.next >= size then
++    incr_table table (2*size);
++ table.data.(table.next) <- i ;
++ table.next <- table.next + 1
++;;
++
++
++exception Error
++
++let get t i =
++  if 0 <= i && i < t.next then
++    t.data.(i)
++  else
++    raise Error
++
++let trim t =
++  let r = Array.sub t.data 0 t.next in
++  reset t ;
++  r
++
++let iter t f =
++  let size = t.next
++  and data = t.data in
++  for i = 0 to size-1 do
++    f data.(i)
++  done
++
++let size t = t.next
+diff -urN wlex-20030827.orig/lex/table.mli wlex-20030827/lex/table.mli
+--- wlex-20030827.orig/lex/table.mli	1970-01-01 01:00:00.000000000 +0100
++++ wlex-20030827/lex/table.mli	2003-09-03 23:54:22.000000000 +0200
+@@ -0,0 +1,33 @@
++(***********************************************************************)
++(*                                                                     *)
++(*                           Objective Caml                            *)
++(*                                                                     *)
++(*            Luc Maranget, projet Moscova, INRIA Rocquencourt         *)
++(*                                                                     *)
++(*  Copyright 2002 Institut National de Recherche en Informatique et   *)
++(*  en Automatique.  All rights reserved.  This file is distributed    *)
++(*  under the terms of the Q Public License version 1.0.               *)
++(*                                                                     *)
++(***********************************************************************)
++
++(* Table used for code emission, ie extensible arrays *)
++type 'a t
++
++val create : 'a -> 'a t  
++
++val emit : 'a t -> 'a -> unit
++
++val iter : 'a t -> ('a -> unit) -> unit
++
++val trim : 'a t -> 'a array
++
++
++exception Error
++
++val get : 'a t -> int -> 'a
++
++
++
++val size : 'a t -> int
++
++
