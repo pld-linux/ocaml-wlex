@@ -1,15 +1,15 @@
 Summary:	Lexer for wide encodings
 Summary(pl):	Lexer dla du¿ych kodowañ znaków
 Name:		ocaml-wlex
-Version:	20021107
-Release:	2
+Version:	20030827
+Release:	1
 License:	LGPL
 Group:		Development/Tools
 Vendor:		Alain Frisch <Alain.Frisch@ens.fr>
 # note: no / at the end of URL
 URL:		http://www.eleves.ens.fr/home/frisch/soft
 Source0:	http://www.eleves.ens.fr/home/frisch/info/wlex-%{version}.tar.gz
-# Source0-md5:	7a934e7158464632872647bad6f1145d
+# Source0-md5:	4ae79d74436f1004582f8ca12b91ecd9
 Patch0:		%{name}-lex-src.patch
 BuildRequires:	ocaml >= 3.07
 BuildRequires:	ocaml-findlib
