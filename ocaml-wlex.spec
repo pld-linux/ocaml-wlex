@@ -1,14 +1,14 @@
 Summary:	Lexer for wide encodings
 Summary(pl):	Lexer dla du¿ych kodowañ znaków
 Name:		ocaml-wlex
-Version:	20020220
+Version:	20021107
 Release:	1
 License:	LGPL
 Group:		Development/Tools
 Vendor:		Alain Frisch <Alain.Frisch@ens.fr>
-URL:		http://www.eleves.ens.fr:8080/home/frisch/soft/
-Source0:	http://www.eleves.ens.fr:8080/home/frisch/info/wlex-%{version}.tar.gz
-# Source0-md5:	37ac559b6f47260921ae024b9a226bb0
+URL:		http://www.eleves.ens.fr/home/frisch/soft
+# Source0-md5:	7a934e7158464632872647bad6f1145d
+Source0:	http://www.eleves.ens.fr/home/frisch/info/wlex-%{version}.tar.gz
 Patch0:		%{name}-lex-src.patch
 BuildRequires:	ocaml >= 3.04-7
 %requires_eq	ocaml-runtime
@@ -45,36 +45,34 @@ jest rozpowszechiany na zasadach LGPL. Pakiet ten zawiera pliki
 niezbêdne do tworzenia programów u¿ywaj±cych tej biblioteki.
 
 %prep
-%setup -q -n wlex
+%setup -q -n wlex-%{version}
 %patch0 -p1
 
 %build
 %{__make} wlex runtime
-echo 'directory = "+wlexing"' >> META
 
 %install
 rm -rf $RPM_BUILD_ROOT
 
-install -d $RPM_BUILD_ROOT{%{_bindir},%{_libdir}/ocaml/wlexing}
+install -d $RPM_BUILD_ROOT{%{_bindir},%{_libdir}/ocaml/{site-lib/wlexing,stublibs}}
 
-install *.cm[ixa]* *.a dll*.so $RPM_BUILD_ROOT%{_libdir}/ocaml/wlexing
-(cd $RPM_BUILD_ROOT%{_libdir}/ocaml && ln -s wlexing/dll*.so .)
+%{__make} install \
+	OCAMLFIND_DESTDIR=$RPM_BUILD_ROOT%{_libdir}/ocaml \
+	INSTALL_BIN=$RPM_BUILD_ROOT%{_bindir}
 
-install wlex $RPM_BUILD_ROOT%{_bindir}
+mv -f $RPM_BUILD_ROOT%{_libdir}/ocaml/wlexing/META \
+	$RPM_BUILD_ROOT%{_libdir}/ocaml/site-lib/wlexing/
+echo 'directory = "+wlexing"' >> $RPM_BUILD_ROOT%{_libdir}/ocaml/site-lib/wlexing/META
 
 install -d $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}
 cp -r test/* $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}
-
-install -d $RPM_BUILD_ROOT%{_libdir}/ocaml/site-lib/wlexing
-install META $RPM_BUILD_ROOT%{_libdir}/ocaml/site-lib/wlexing
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/ocaml/wlexing/*.so
-%{_libdir}/ocaml/*.so
+%attr(755,root,root) %{_libdir}/ocaml/stublibs/*.so
 
 %files devel
 %defattr(644,root,root,755)
