@@ -67,8 +67,6 @@ cp -r test/* $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}
 install -d $RPM_BUILD_ROOT%{_libdir}/ocaml/site-lib/wlexing
 install META $RPM_BUILD_ROOT%{_libdir}/ocaml/site-lib/wlexing
 
-gzip -9nf README RELEASE *.mli
-
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -79,7 +77,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files devel
 %defattr(644,root,root,755)
-%doc *.gz
+%doc README RELEASE *.mli
 %attr(755,root,root) %{_bindir}/*
 %dir %{_libdir}/ocaml/wlexing
 %{_libdir}/ocaml/wlexing/*.cm[ixa]*
