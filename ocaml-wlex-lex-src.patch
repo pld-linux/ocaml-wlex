@@ -75,7 +75,7 @@ diff -urN wlex-20030827.orig/lex/Makefile wlex-20030827/lex/Makefile
 +# The lexer generator
 +CAMLC=../boot/ocamlrun ../boot/ocamlc -nostdlib -I ../boot
 +CAMLOPT=../boot/ocamlrun ../ocamlopt -nostdlib -I ../stdlib
-+COMPFLAGS=-warn-error A
++COMPFLAGS=
 +CAMLYACC=../boot/ocamlyacc
 +YACCFLAGS=-v
 +CAMLLEX=../boot/ocamlrun ../boot/ocamllex
@@ -239,7 +239,7 @@ diff -urN wlex-20030827.orig/lex/Makefile.nt wlex-20030827/lex/Makefile.nt
 +
 +CAMLC=../boot/ocamlrun ../boot/ocamlc -I ../boot
 +CAMLOPT=../boot/ocamlrun ../ocamlopt -I ../stdlib
-+COMPFLAGS=-warn-error A
++COMPFLAGS=
 +LINKFLAGS=
 +CAMLYACC=../boot/ocamlyacc
 +YACCFLAGS=-v
