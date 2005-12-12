@@ -3,7 +3,7 @@ diff -urN wlex-20030827.orig/Makefile wlex-20030827/Makefile
 +++ wlex-20030827/Makefile	2003-09-03 23:54:33.000000000 +0200
 @@ -1,5 +1,5 @@
  # Edit and uncomment the following line
--OCAMLLEX_SRC = ~/lex308
+-OCAMLLEX_SRC = ~/ocaml-3.07beta2/lex
 +OCAMLLEX_SRC = lex
  
  # The directory where the wlex binary goes
