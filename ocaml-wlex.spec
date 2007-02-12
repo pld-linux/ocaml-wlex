@@ -1,6 +1,6 @@
 %define		ocaml_ver	1:3.09.2
 Summary:	Lexer for wide encodings
-Summary(pl):	Lexer dla du¿ych kodowañ znaków
+Summary(pl.UTF-8):   Lexer dla duÅ¼ych kodowaÅ„ znakÃ³w
 Name:		ocaml-wlex
 Version:	20030827
 Release:	10
@@ -22,14 +22,14 @@ Lexer generator for wide encodings (like UTF8) and the associated
 runtime system. This package contains files needed to run bytecode
 executables using this library.
 
-%description -l pl
-Generator lekserów dla du¿ych kodowañ znaków (jak UTF8) oraz system
+%description -l pl.UTF-8
+Generator lekserÃ³w dla duÅ¼ych kodowaÅ„ znakÃ³w (jak UTF8) oraz system
 uruchomieniowy. Pakiet ten zawiera binaria potrzebne do uruchamiania
-programów u¿ywaj±cych tej biblioteki.
+programÃ³w uÅ¼ywajÄ…cych tej biblioteki.
 
 %package devel
 Summary:	Lexer for wide encodings - development part
-Summary(pl):	Lexer dla du¿ych kodowañ znaków - cze¶æ programistyczna
+Summary(pl.UTF-8):   Lexer dla duÅ¼ych kodowaÅ„ znakÃ³w - czeÅ›Ä‡ programistyczna
 Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
 %requires_eq	ocaml
@@ -40,12 +40,12 @@ runtime system. Lexer generator is covered by QPL (as it was derived
 from part of OCaml), runtime system is covered by LGPL. This package
 contains files needed to develop OCaml programs using this library.
 
-%description devel -l pl
-Generator lekserów dla du¿ych kodowañ znaków (jak UTF8) oraz system
+%description devel -l pl.UTF-8
+Generator lekserÃ³w dla duÅ¼ych kodowaÅ„ znakÃ³w (jak UTF8) oraz system
 uruchomieniowy. Generator jest rozpowszechniany na licencju QPL (jako
-¿e jest on bazowany na czê¶ci OCamla), system uruchomieniowy natomiast
+Å¼e jest on bazowany na czÄ™Å›ci OCamla), system uruchomieniowy natomiast
 jest rozpowszechniany na zasadach LGPL. Pakiet ten zawiera pliki
-niezbêdne do tworzenia programów u¿ywaj±cych tej biblioteki.
+niezbÄ™dne do tworzenia programÃ³w uÅ¼ywajÄ…cych tej biblioteki.
 
 %prep
 %setup -q -n wlex-%{version}
