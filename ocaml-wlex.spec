@@ -1,6 +1,6 @@
 %define		ocaml_ver	1:3.09.2
 Summary:	Lexer for wide encodings
-Summary(pl.UTF-8):   Lexer dla dużych kodowań znaków
+Summary(pl.UTF-8):	Lexer dla dużych kodowań znaków
 Name:		ocaml-wlex
 Version:	20030827
 Release:	10
@@ -29,7 +29,7 @@ programów używających tej biblioteki.
 
 %package devel
 Summary:	Lexer for wide encodings - development part
-Summary(pl.UTF-8):   Lexer dla dużych kodowań znaków - cześć programistyczna
+Summary(pl.UTF-8):	Lexer dla dużych kodowań znaków - cześć programistyczna
 Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
 %requires_eq	ocaml
