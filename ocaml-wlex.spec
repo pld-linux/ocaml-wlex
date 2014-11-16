@@ -3,7 +3,7 @@ Summary:	Lexer for wide encodings
 Summary(pl.UTF-8):	Lexer dla dużych kodowań znaków
 Name:		ocaml-wlex
 Version:	20030827
-Release:	13
+Release:	14
 License:	LGPL
 Group:		Development/Tools
 URL:		http://www.eleves.ens.fr/home/frisch/soft
