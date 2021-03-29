@@ -3,7 +3,7 @@ Summary:	Lexer for wide encodings
 Summary(pl.UTF-8):	Lexer dla dużych kodowań znaków
 Name:		ocaml-wlex
 Version:	20030827
-Release:	17
+Release:	18
 License:	LGPL
 Group:		Development/Tools
 URL:		http://www.eleves.ens.fr/home/frisch/soft
@@ -64,10 +64,6 @@ install -d $RPM_BUILD_ROOT{%{_bindir},%{_libdir}/ocaml/{site-lib/wlexing,stublib
 	OCAMLFIND_DESTDIR=$RPM_BUILD_ROOT%{_libdir}/ocaml \
 	INSTALL_BIN=$RPM_BUILD_ROOT%{_bindir}
 
-mv -f $RPM_BUILD_ROOT%{_libdir}/ocaml/wlexing/META \
-	$RPM_BUILD_ROOT%{_libdir}/ocaml/site-lib/wlexing/
-echo 'directory = "+wlexing"' >> $RPM_BUILD_ROOT%{_libdir}/ocaml/site-lib/wlexing/META
-
 install -d $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}
 cp -r test/* $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}
 
@@ -83,7 +79,7 @@ rm -rf $RPM_BUILD_ROOT
 %doc README RELEASE *.mli
 %attr(755,root,root) %{_bindir}/*
 %dir %{_libdir}/ocaml/wlexing
+%{_libdir}/ocaml/wlexing/META
 %{_libdir}/ocaml/wlexing/*.cm[ixa]*
 %{_libdir}/ocaml/wlexing/*.a
 %{_examplesdir}/%{name}-%{version}
-%{_libdir}/ocaml/site-lib/wlexing
