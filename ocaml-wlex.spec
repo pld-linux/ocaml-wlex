@@ -49,8 +49,8 @@ niezbędne do tworzenia programów używających tej biblioteki.
 
 %prep
 %setup -q -n wlex-%{version}
-%patch0 -p1
-%patch1 -p1
+%patch -P0 -p1
+%patch -P1 -p1
 
 %build
 %{__make} wlex runtime
